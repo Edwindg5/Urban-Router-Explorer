@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../atoms/AuthContext';
-import Button from '../atoms/ButtonOptions';
-import LinkButton from '../atoms/LinkButtonChecador';
-import ButtonOptions from '../atoms/ButtonOptions';
 import LinkButtonChecador from '../atoms/LinkButtonChecador';
 import ButtonChecador from '../atoms/ButtonChecador';
+
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -18,10 +16,10 @@ function LoginForm() {
 
     if (email === 'conductor@example.com' && password === '123') {
       login();
-      navigate('/options');  // Redirigir a las opciones del conductor
+      navigate('/options');  
     } else if (email === 'checador@example.com' && password === '456') {
       login();
-      navigate('/checador'); // Redirigir a las opciones del checador
+      navigate('/optionschecador'); 
     } else {
       alert('Credenciales incorrectas');
     }
