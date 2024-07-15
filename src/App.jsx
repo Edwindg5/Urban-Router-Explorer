@@ -7,6 +7,7 @@ import Footer from './components/atoms/Footer';
 import Login from './pages/Login';
 import ConductorOptions from './pages/ConductorOptions';
 import ChecadorOptions from './pages/ChecadorOptions';
+import Administrador from './pages/Administrador';
 import Horario from './pages/Horario';
 import Taller from './pages/Taller';
 import Reporte from './pages/Reporte';
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/options" element={<PrivateRoute element={<ConductorOptions />} />} />
           <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions/>}/>}/>
+          <Route path='/optionsadmin' element={<PrivateRoute element={ <Administrador/>}/>}/>
           <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
           <Route path="/taller" element={<PrivateRoute element={<Taller />} />} />
           <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />

@@ -20,6 +20,9 @@ function LoginForm() {
     } else if (email === 'checador@example.com' && password === '456') {
       login();
       navigate('/optionschecador'); 
+    }else if (email ==='admin@gmail.com' && password === '789'){
+      login();
+      navigate('/optionsadmin')
     } else {
       alert('Credenciales incorrectas');
     }
