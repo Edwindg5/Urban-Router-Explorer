@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function Option({ to, label }) {
   return (
-    <Link to={to} className="mb-4 p-4 bg-purple-600 text-white rounded">
+    <Link to={to} className="mb-4 p-4 bg-purple-600 text-white rounded text-center w-full">
       {label}
     </Link>
   );

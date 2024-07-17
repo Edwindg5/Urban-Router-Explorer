@@ -14,10 +14,10 @@ function LoginForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (email === 'conductor@example.com' && password === '123') {
+    if (email === 'conductor@gmail.com' && password === '123') {
       login();
       navigate('/options');  
-    } else if (email === 'checador@example.com' && password === '456') {
+    } else if (email === 'checador@gmail.com' && password === '456') {
       login();
       navigate('/optionschecador'); 
     }else if (email ==='admin@gmail.com' && password === '789'){

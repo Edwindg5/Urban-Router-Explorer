@@ -1,5 +1,4 @@
 import React from 'react';
-import OptionCard from '../molecules/OptionCardChecador';
 import OptionCardChecador from '../molecules/OptionCardChecador';
 
 function OptionsGridChecador() {
@@ -18,6 +17,21 @@ function OptionsGridChecador() {
       title: 'Listas',
       description: 'Gestión de listas y reportes.',
       link: '/listas',
+    },
+    {
+      title: 'Horario',
+      description: 'Escoje su horario y su unidad para el día que trabajar.',
+      link: '/horario',
+    },
+    {
+      title: 'Reportes',
+      description: 'Hacer reportes sobre algún problema o algo.',
+      link: '/reporte-problemas',
+    },
+    {
+      title: 'Ganancias',
+      description: 'Verifica las ganancias y viajes que lleva hechos.',
+      link: '/ganancias',
     },
   ];
 
