@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ButtonOptions from '../atoms/ButtonOptions';
 
 function ReporteContent() {
-  const horarioDataList = JSON.parse(localStorage.getItem('horarioDataList')) || [];
+  const [horarioDataList, setHorarioDataList] = useState([]);
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('horarioDataList')) || [];
+    setHorarioDataList(data);
+  }, []);
 
   const handleDelete = (index) => {
     const updatedList = horarioDataList.filter((_, i) => i !== index);
+    setHorarioDataList(updatedList);
     localStorage.setItem('horarioDataList', JSON.stringify(updatedList));
-    window.location.reload();
   };
 
   return (
