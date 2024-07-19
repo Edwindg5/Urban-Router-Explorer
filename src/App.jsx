@@ -14,8 +14,12 @@ import Taller from './pages/Taller';
 import Reporte from './pages/Reporte';
 import Tarifa from './pages/Tarifa';
 import Ganancias from './pages/Ganancias';
-import { AuthProvider, useAuth } from './components/atoms/AuthContext';
 import ReporteProblemas from './pages/ReporteProblemas';
+import { AuthProvider, useAuth } from './components/atoms/AuthContext';
+import ListaDeUnidadesPage from './pages/ListaDeUnidadesPage';
+import CumplimientoDeHorario from './pages/CumplimientoDeHorarioPage';
+import ChoferesPage from './pages/ChoferesPage';
+import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
 
 const PrivateRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
@@ -43,6 +47,10 @@ function App() {
           <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
           <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />
           <Route path="/reporte-problemas" element={<PrivateRoute element={<ReporteProblemas />} />} />
+          <Route path="/unidades" element={<PrivateRoute element={<ListaDeUnidadesPage />} />} />
+          <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} />} />
+          <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} />} />
+          <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} />} />
         </Routes>
         <Footer />
       </div>

@@ -1,65 +1,95 @@
-import React from 'react';
-import ButtonOptions from '../atoms/ButtonOptions';
+import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 
-function HorarioForm({ formData, handleChange, handleSubmit }) {
+function HorarioForm() {
+  const [formData, setFormData] = useState({
+    trabajar: false,
+    horaEntrada: '',
+    horaSalida: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.horaEntrada || !formData.horaSalida) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, llene todos los campos',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    const currentData = {
+      ...formData,
+      timestamp: new Date().toLocaleString()
+    };
+
+    const existingData = JSON.parse(localStorage.getItem('horarioDataList')) || [];
+    existingData.push(currentData);
+    localStorage.setItem('horarioDataList', JSON.stringify(existingData));
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Datos enviados',
+      text: 'Se ha enviado la información exitosamente',
+      confirmButtonText: 'OK'
+    });
+
+    setFormData({
+      trabajar: false,
+      horaEntrada: '',
+      horaSalida: '',
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label className="block text-center mb-2">Trabajaras el día de mañana?</label>
-        <div className="flex justify-center items-center">
-          <label className="mr-2">No</label>
-          <input
-            type="checkbox"
-            name="trabajar"
-            checked={formData.trabajar}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          <label>Si</label>
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex items-center space-x-2">
+        <input 
+          type="checkbox" 
+          name="trabajar" 
+          checked={formData.trabajar} 
+          onChange={handleChange} 
+          className="form-checkbox"
+        />
+        <span>Trabajar hoy</span>
       </div>
-      <div className="mb-4">
-        <label className="block mb-2">Hora de Entrada</label>
-        <select
-          name="horaEntrada"
-          value={formData.horaEntrada}
-          onChange={handleChange}
+      <div>
+        <label className="block mb-1">Hora de Entrada</label>
+        <input 
+          type="time" 
+          name="horaEntrada" 
+          value={formData.horaEntrada} 
+          onChange={handleChange} 
           className="w-full p-2 border rounded"
-        >
-          <option value="">Seleccionar...</option>
-          <option value="6:00 AM">6:00 AM</option>
-          <option value="7:00 AM">7:00 AM</option>
-        </select>
+        />
       </div>
-      <div className="mb-4">
-        <label className="block mb-2">Hora de Salida</label>
-        <select
-          name="horaSalida"
-          value={formData.horaSalida}
-          onChange={handleChange}
+      <div>
+        <label className="block mb-1">Hora de Salida</label>
+        <input 
+          type="time" 
+          name="horaSalida" 
+          value={formData.horaSalida} 
+          onChange={handleChange} 
           className="w-full p-2 border rounded"
-        >
-          <option value="">Seleccionar...</option>
-          <option value="6:00 PM">6:00 PM</option>
-          <option value="7:00 PM">7:00 PM</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2">Qué unidad utilizarás?</label>
-        <select
-          name="unidad"
-          value={formData.unidad}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value="">Seleccionar...</option>
-          <option value="Unidad 1">Unidad 1</option>
-          <option value="Unidad 2">Unidad 2</option>
-        </select>
+        />
       </div>
       <div className="flex justify-between">
-        <ButtonOptions to="/options">Salir</ButtonOptions>
-        <button type="submit" className="p-2 bg-green-500 text-white rounded">Enviar</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300">
+          Enviar
+        </button>
+        <button type="button" onClick={() => window.location.href = "/options"} className="bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300">
+          Regresar
+        </button>
       </div>
     </form>
   );

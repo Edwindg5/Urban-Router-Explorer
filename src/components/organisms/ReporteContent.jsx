@@ -57,4 +57,5 @@ function ReporteContent() {
     </div>
   );
 }
+
 export default ReporteContent;
