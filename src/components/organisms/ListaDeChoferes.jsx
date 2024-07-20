@@ -1,7 +1,7 @@
 import React from 'react';
 
 function ListaDeChoferes() {
-  const choferes = JSON.parse(localStorage.getItem('choferes')) || [];
+  const choferes = JSON.parse(localStorage.getItem('choferesData')) || [];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-400 to-blue-500">
@@ -14,6 +14,7 @@ function ListaDeChoferes() {
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
               </tr>
             </thead>
             <tbody>
@@ -22,6 +23,7 @@ function ListaDeChoferes() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.nombre}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.telefono}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.unidad}</td>
                 </tr>
               ))}
             </tbody>

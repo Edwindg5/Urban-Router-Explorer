@@ -2,20 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
+const unidades = Array.from({ length: 20 }, (_, i) => `Unidad ${i + 1}`);
+
 function ChoferesForm({ onRegister }) {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     id: '',
     nombre: '',
-    telefono: ''
+    telefono: '',
+    unidad: ''
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value
-    }));
+    });
   };
 
   const handleSubmit = (e) => {
@@ -43,7 +47,17 @@ function ChoferesForm({ onRegister }) {
       return;
     }
 
-    onRegister(formData);
+    const unidadIndex = parseInt(id.charAt(0), 10) % unidades.length;
+    const unidad = unidades[unidadIndex];
+
+    const newChofer = {
+      ...formData,
+      unidad
+    };
+
+    const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
+    choferesData.push(newChofer);
+    localStorage.setItem('choferesData', JSON.stringify(choferesData));
 
     Swal.fire({
       icon: 'success',
@@ -52,10 +66,13 @@ function ChoferesForm({ onRegister }) {
       confirmButtonText: 'OK'
     });
 
+    onRegister(newChofer);
+
     setFormData({
       id: '',
       nombre: '',
-      telefono: ''
+      telefono: '',
+      unidad: ''
     });
   };
 
@@ -63,31 +80,31 @@ function ChoferesForm({ onRegister }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-1">ID del Conductor</label>
-        <input 
-          type="text" 
-          name="id" 
-          value={formData.id} 
-          onChange={handleChange} 
+        <input
+          type="text"
+          name="id"
+          value={formData.id}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
         />
       </div>
       <div>
         <label className="block mb-1">Nombre Completo</label>
-        <input 
-          type="text" 
-          name="nombre" 
-          value={formData.nombre} 
-          onChange={handleChange} 
+        <input
+          type="text"
+          name="nombre"
+          value={formData.nombre}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
         />
       </div>
       <div>
         <label className="block mb-1">Número Telefónico</label>
-        <input 
-          type="text" 
-          name="telefono" 
-          value={formData.telefono} 
-          onChange={handleChange} 
+        <input
+          type="text"
+          name="telefono"
+          value={formData.telefono}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
         />
       </div>

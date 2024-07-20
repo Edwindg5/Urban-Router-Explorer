@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import ChoferesForm from '../molecules/ChoferesForm';
 
 function Choferes() {
-  const [choferes, setChoferes] = useState(JSON.parse(localStorage.getItem('choferes')) || []);
+  const [choferes, setChoferes] = useState(JSON.parse(localStorage.getItem('choferesData')) || []);
 
   const handleRegister = (chofer) => {
     const newChoferes = [...choferes, chofer];
     setChoferes(newChoferes);
-    localStorage.setItem('choferes', JSON.stringify(newChoferes));
+    localStorage.setItem('choferesData', JSON.stringify(newChoferes));
   };
 
   return (
