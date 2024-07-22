@@ -8,5 +8,5 @@ function Tarifa() {
     </div>
   );
 }
-
+    
 export default Tarifa;

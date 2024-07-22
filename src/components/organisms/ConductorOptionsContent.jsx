@@ -1,5 +1,5 @@
 import React from 'react';
-import Option  from '../molecules/Option';
+import Option from '../molecules/Option';
 
 function ConductorOptionsContent() {
   return (
@@ -7,10 +7,9 @@ function ConductorOptionsContent() {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
         <h2 className="text-2xl font-bold mb-6 text-center">Opciones del Conductor</h2>
         <div className="flex flex-col items-center">
-        <Option to="/horario" label="Horario" />
-        <Option to="/taller" label="Taller" />
-        <Option to="/reporte" label="Reporte" />
-        <Option to="/tarifa" label="Tarifa" />
+          <Option to="/horario" label="Horario" />
+          <Option to="/reporte" label="Reporte" />
+          <Option to="/ganancias" label="Ganancias y Viajes" />
         </div>
       </div>
     </div>
