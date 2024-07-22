@@ -5,7 +5,7 @@ function Card({ image, info }) {
 
   return (
     <div
-      className="cursor-pointer p-4 bg-gradient-to-r from-green-400 via-blue-500 to-green-400 text-white rounded-md shadow-md transform transition-transform hover:scale-105 w-full"
+      className="cursor-pointer p-4 bg-gradient-to-r from-black via-blue-600 to-black text-white rounded-md shadow-md transform transition-transform hover:scale-105 w-full"
       onClick={() => setExpanded(!expanded)}
     >
       <img src={image} alt="Card" className="w-full h-48 object-cover mb-4 rounded-md" />
