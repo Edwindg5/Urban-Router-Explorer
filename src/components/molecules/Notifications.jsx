@@ -5,12 +5,21 @@ const Notifications = () => {
   const { notifications } = useNotification();
 
   return (
-    <div className="fixed top-0 right-0 p-4">
-      {notifications.map((notification, index) => (
-        <div key={index} className="mb-2 p-4 bg-red-500 text-white rounded-lg shadow-lg">
-          {notification}
-        </div>
-      ))}
+    <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+      <div className="bg-blue-600 text-white p-4">
+        <h2 className="text-lg font-bold">Notificaciones</h2>
+      </div>
+      <div className="p-4">
+        {notifications.length > 0 ? (
+          notifications.map((notification, index) => (
+            <div key={index} className="bg-blue-100 p-2 mb-2 rounded-md">
+              {notification}
+            </div>
+          ))
+        ) : (
+          <div className="text-gray-500">No hay notificaciones.</div>
+        )}
+      </div>
     </div>
   );
 };

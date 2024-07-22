@@ -17,12 +17,11 @@ import Tarifa from './pages/Tarifa';
 import Ganancias from './pages/Ganancias';
 import ReporteProblemas from './pages/ReporteProblemas';
 import { AuthProvider, useAuth } from './components/atoms/AuthContext';
-import { NotificationProvider } from './components/atoms/NotificationContext'; 
+import { NotificationProvider } from './components/atoms/NotificationContext';
 import ListaDeUnidadesPage from './pages/ListaDeUnidadesPage';
 import CumplimientoDeHorario from './pages/CumplimientoDeHorarioPage';
 import ChoferesPage from './pages/ChoferesPage';
 import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
-import Notifications from './components/molecules/Notifications'; 
 
 const PrivateRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
@@ -32,10 +31,9 @@ const PrivateRoute = ({ element }) => {
 function App() {
   return (
     <AuthProvider>
-      <NotificationProvider> 
+      <NotificationProvider>
         <div>
           <Header />
-          <Notifications />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/conductor" element={<Conductor />} />
@@ -65,3 +63,4 @@ function App() {
 }
 
 export default App;
+

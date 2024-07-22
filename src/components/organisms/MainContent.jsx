@@ -7,11 +7,8 @@ import imagen4 from '../../assets/imagen4.jpeg';
 import imagen5 from '../../assets/imagen5.jpeg'; 
 import imagen6 from '../../assets/imagen6.jpeg'; 
 import imagen7 from '../../assets/imagen7.png';
-import { useNotification } from '../atoms/NotificationContext';
 
 function MainContent() {
-  const { notifications } = useNotification();
-  const [showNotifications, setShowNotifications] = useState(false);
 
   const cardsData = [
     { image: imagen2, info: 'Ruta: Suchiapa -> Tuxtla. Paradas: Parque Central, Plaza de la Tecnología, Universidad Politécnica. Frecuencia: Cada 30 minutos. Precio: $20.' },
@@ -25,7 +22,7 @@ function MainContent() {
   return (
     <main className="flex flex-col items-center p-4 bg-gradient-to-b from-green-400 to-blue-500 text-white min-h-screen">
       <section className="w-full max-w-screen-lg text-center mb-4">
-        <h1 className="text-4xl font-bold mb-6">Suchiapa Necesita A los Colectivos</h1>
+        <h1 className="text-4xl font-bold mb-6">Necesitamos a Los Colectivos</h1>
         <Carousel />
       </section>
       <section className="w-full max-w-screen-lg bg-white bg-opacity-30 text-black p-8 rounded-lg shadow-lg mb-6">
@@ -43,24 +40,6 @@ function MainContent() {
         <div className="w-full h-64 mt-4">
           <img src={imagen7} alt="Mapa o Información" className="w-full h-full object-cover rounded-lg shadow-lg" />
         </div>
-      </section>
-      <section className="fixed bottom-4 right-4">
-        <button 
-          onClick={() => setShowNotifications(!showNotifications)} 
-          className="bg-red-500 text-white p-3 rounded-full shadow-lg focus:outline-none"
-        >
-          <i className="fas fa-bell"></i>
-        </button>
-        {showNotifications && (
-          <div className="absolute right-0 bottom-16 bg-white text-black p-4 rounded-lg shadow-lg w-64">
-            <h3 className="text-xl font-bold mb-2">Notificaciones</h3>
-            <ul>
-              {notifications.map((notification, index) => (
-                <li key={index} className="mb-2 border-b pb-2">{notification}</li>
-              ))}
-            </ul>
-          </div>
-        )}
       </section>
     </main>
   );
