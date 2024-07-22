@@ -12,14 +12,17 @@ import Administrador from './pages/Administrador';
 import Horario from './pages/Horario';
 import Taller from './pages/Taller';
 import Reporte from './pages/Reporte';
+import ReporteForm from './components/molecules/ReporteForm';
 import Tarifa from './pages/Tarifa';
 import Ganancias from './pages/Ganancias';
 import ReporteProblemas from './pages/ReporteProblemas';
 import { AuthProvider, useAuth } from './components/atoms/AuthContext';
+import { NotificationProvider } from './components/atoms/NotificationContext'; 
 import ListaDeUnidadesPage from './pages/ListaDeUnidadesPage';
 import CumplimientoDeHorario from './pages/CumplimientoDeHorarioPage';
 import ChoferesPage from './pages/ChoferesPage';
 import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
+import Notifications from './components/molecules/Notifications'; 
 
 const PrivateRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
@@ -29,31 +32,34 @@ const PrivateRoute = ({ element }) => {
 function App() {
   return (
     <AuthProvider>
-      <div>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/conductor" element={<Conductor />} />
-          <Route path="/informacion" element={<Home />} />
-          <Route path="/estacion" element={<Estacion />} />
-          <Route path="/contacto" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/options" element={<PrivateRoute element={<ConductorOptions />} />} />
-          <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} />} />
-          <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} />} />
-          <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
-          <Route path="/taller" element={<PrivateRoute element={<Taller />} />} />
-          <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />
-          <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
-          <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />
-          <Route path="/reporte-problemas" element={<PrivateRoute element={<ReporteProblemas />} />} />
-          <Route path="/unidades" element={<PrivateRoute element={<ListaDeUnidadesPage />} />} />
-          <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} />} />
-          <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} />} />
-          <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} />} />
-        </Routes>
-        <Footer />
-      </div>
+      <NotificationProvider> 
+        <div>
+          <Header />
+          <Notifications />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/conductor" element={<Conductor />} />
+            <Route path="/informacion" element={<Home />} />
+            <Route path="/estacion" element={<Estacion />} />
+            <Route path="/contacto" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/options" element={<PrivateRoute element={<ConductorOptions />} />} />
+            <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} />} />
+            <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} />} />
+            <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
+            <Route path="/taller" element={<PrivateRoute element={<Taller />} />} />
+            <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />
+            <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
+            <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />
+            <Route path="/reporte-problemas" element={<PrivateRoute element={<ReporteProblemas />} />} />
+            <Route path="/unidades" element={<PrivateRoute element={<ListaDeUnidadesPage />} />} />
+            <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} />} />
+            <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} />} />
+            <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} />} />
+          </Routes>
+          <Footer />
+        </div>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

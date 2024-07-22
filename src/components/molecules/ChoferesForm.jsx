@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const unidades = Array.from({ length: 20 }, (_, i) => `Unidad ${i + 1}`);
-
-function ChoferesForm({ onRegister }) {
+function ChoferesForm({ unidadesDisponibles }) {
   const [formData, setFormData] = useState({
     id: '',
     nombre: '',
@@ -25,9 +23,9 @@ function ChoferesForm({ onRegister }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { id, nombre, telefono } = formData;
+    const { id, nombre, telefono, unidad } = formData;
 
-    if (!id || !nombre || !telefono) {
+    if (!id || !nombre || !telefono || !unidad) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -47,16 +45,20 @@ function ChoferesForm({ onRegister }) {
       return;
     }
 
-    const unidadIndex = parseInt(id.charAt(0), 10) % unidades.length;
-    const unidad = unidades[unidadIndex];
-
-    const newChofer = {
-      ...formData,
-      unidad
-    };
-
     const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    choferesData.push(newChofer);
+    const choferesPorUnidad = choferesData.filter(chofer => chofer.unidad === unidad);
+
+    if (choferesPorUnidad.length >= 2) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Cada unidad solo puede tener 2 conductores',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    choferesData.push(formData);
     localStorage.setItem('choferesData', JSON.stringify(choferesData));
 
     Swal.fire({
@@ -65,8 +67,6 @@ function ChoferesForm({ onRegister }) {
       text: 'El conductor ha sido registrado exitosamente',
       confirmButtonText: 'OK'
     });
-
-    onRegister(newChofer);
 
     setFormData({
       id: '',
@@ -80,33 +80,47 @@ function ChoferesForm({ onRegister }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-1">ID del Conductor</label>
-        <input
-          type="text"
-          name="id"
-          value={formData.id}
-          onChange={handleChange}
+        <input 
+          type="text" 
+          name="id" 
+          value={formData.id} 
+          onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
       </div>
       <div>
         <label className="block mb-1">Nombre Completo</label>
-        <input
-          type="text"
-          name="nombre"
-          value={formData.nombre}
-          onChange={handleChange}
+        <input 
+          type="text" 
+          name="nombre" 
+          value={formData.nombre} 
+          onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
       </div>
       <div>
         <label className="block mb-1">Número Telefónico</label>
-        <input
-          type="text"
-          name="telefono"
-          value={formData.telefono}
-          onChange={handleChange}
+        <input 
+          type="text" 
+          name="telefono" 
+          value={formData.telefono} 
+          onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
+      </div>
+      <div>
+        <label className="block mb-1">Unidad</label>
+        <select 
+          name="unidad" 
+          value={formData.unidad} 
+          onChange={handleChange} 
+          className="w-full p-2 border rounded"
+        >
+          <option value="">Seleccione una unidad</option>
+          {unidadesDisponibles.map((unidad, index) => (
+            <option key={index} value={unidad}>{unidad}</option>
+          ))}
+        </select>
       </div>
       <div className="flex justify-between">
         <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300">

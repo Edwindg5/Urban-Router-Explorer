@@ -1,61 +1,32 @@
 import React, { useState } from 'react';
-import Swal from 'sweetalert2';
+import { useNotification } from '../atoms/NotificationContext';
 
-function ReporteProblemasContent() {
-  const [formData, setFormData] = useState({
-    descripcion: '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+const ReporteProblemasContent = () => {
+  const [problemas, setProblemas] = useState('');
+  const { addNotification } = useNotification();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const currentData = {
-      ...formData,
-      timestamp: new Date().toLocaleString(),
-    };
-    
-    const existingData = JSON.parse(localStorage.getItem('problemasDataList')) || [];
-    existingData.push(currentData);
-    localStorage.setItem('problemasDataList', JSON.stringify(existingData));
-
-    // Mostrar la alerta de éxito
-    Swal.fire({
-      icon: 'success',
-      title: 'Problema reportado',
-      text: 'Se ha enviado el reporte exitosamente',
-      confirmButtonText: 'OK'
-    });
+    addNotification(`Nuevo problema reportado: ${problemas}`);
+    setProblemas('');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-400 to-blue-500">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Reporte de Problemas</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="descripcion" className="block text-sm font-bold mb-2">Descripción del Problema</label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md"
-              rows="4"
-              required
-            />
-          </div>
-          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded-md">Enviar</button>
-        </form>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6">Reporte de Problemas en la Autopista/Carretera</h2>
+        <textarea
+          value={problemas}
+          onChange={(e) => setProblemas(e.target.value)}
+          className="w-full p-3 border rounded-lg mb-4"
+          placeholder="Describe el problema..."
+        />
+        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">
+          Enviar Reporte
+        </button>
+      </form>
     </div>
   );
-}
+};
 
 export default ReporteProblemasContent;
