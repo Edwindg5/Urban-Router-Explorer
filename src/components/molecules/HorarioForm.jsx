@@ -34,7 +34,7 @@ function HorarioForm() {
     e.preventDefault();
 
     const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    const chofer = choferesData.find(c => c.id === formData.id);
+    const chofer = choferesData.find(c => c.id === parseInt(formData.id, 10));
 
     if (!chofer) {
       Swal.fire({
@@ -57,7 +57,6 @@ function HorarioForm() {
     existingData.push(currentData);
     localStorage.setItem('horarioDataList', JSON.stringify(existingData));
 
-    // Agregar notificación
     if (formData.reporteProblemas) {
       addNotification(`Nuevo reporte de problemas: ${formData.reporteProblemas}`);
     }
@@ -197,11 +196,8 @@ function HorarioForm() {
         </div>
       </div>
       <div className="flex justify-between mt-6">
-        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition duration-300">
+        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition-colors">
           Enviar
-        </button>
-        <button type="button" onClick={() => navigate('/options')} className="bg-red-500 text-white p-3 rounded-lg text-lg hover:bg-red-700 transition duration-300">
-          Regresar
         </button>
       </div>
     </form>

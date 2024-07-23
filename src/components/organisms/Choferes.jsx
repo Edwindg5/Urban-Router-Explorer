@@ -14,7 +14,8 @@ function Choferes() {
   }, []);
 
   const handleRegister = (chofer) => {
-    const newChoferes = [...choferes, chofer];
+    const newChofer = { ...chofer, id: Date.now() };
+    const newChoferes = [...choferes, newChofer];
     setChoferes(newChoferes);
     localStorage.setItem('choferesData', JSON.stringify(newChoferes));
   };
