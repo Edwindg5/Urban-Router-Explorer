@@ -1,139 +1,132 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function AdminVerListasContent() {
-  const [data, setData] = useState([]);
   const [choferes, setChoferes] = useState([]);
-  const navigate = useNavigate();
+  const [totalGanancia, setTotalGanancia] = useState(0);
 
   useEffect(() => {
-    const gananciasData = JSON.parse(localStorage.getItem('gananciasData')) || [];
     const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    setData(gananciasData);
     setChoferes(choferesData);
+    calculateTotalGanancia(choferesData);
   }, []);
 
-  const handleDeleteData = (id) => {
-    const updatedData = data.filter(item => item.id !== id);
-    setData(updatedData);
-    localStorage.setItem('gananciasData', JSON.stringify(updatedData));
+  const calculateTotalGanancia = (choferes) => {
+    let total = 0;
+    choferes.forEach((chofer) => {
+      if (chofer.ganancia) {
+        total += chofer.ganancia;
+      }
+    });
+    setTotalGanancia(total);
   };
 
-  const handleEditData = (id) => {
-    const item = data.find(item => item.id === id);
-    const chofer = choferes.find(chofer => chofer.id === parseInt(item.choferId, 10));
+  const handleEdit = (chofer) => {
+    Swal.fire({
+      title: 'Editar Conductor',
+      html: `
+        <input type="text" id="nombre" class="swal2-input" placeholder="Nombre" value="${chofer.nombre}">
+        <input type="text" id="telefono" class="swal2-input" placeholder="Teléfono" value="${chofer.telefono}">
+        <input type="text" id="unidad" class="swal2-input" placeholder="Unidad" value="${chofer.unidad}">
+        <input type="number" id="ganancia" class="swal2-input" placeholder="Ganancia" value="${chofer.ganancia || ''}">
+      `,
+      preConfirm: () => {
+        const nombre = document.getElementById('nombre').value;
+        const telefono = document.getElementById('telefono').value;
+        const unidad = document.getElementById('unidad').value;
+        const ganancia = document.getElementById('ganancia').value;
+        if (!nombre || !telefono || !unidad || ganancia === '') {
+          Swal.showValidationMessage('Por favor complete todos los campos');
+        }
+        return { nombre, telefono, unidad, ganancia: parseFloat(ganancia) };
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedChofer = { ...chofer, ...result.value };
+        const updatedChoferes = choferes.map(c => c.id === chofer.id ? updatedChofer : c);
+        setChoferes(updatedChoferes);
+        localStorage.setItem('choferesData', JSON.stringify(updatedChoferes));
+        calculateTotalGanancia(updatedChoferes);
+        Swal.fire('Guardado', 'El conductor ha sido actualizado', 'success');
+      }
+    });
+  };
 
-    if (item && chofer) {
+  const handleShowDetails = (id) => {
+    const chofer = choferes.find(c => c.id === id);
+    if (chofer) {
       Swal.fire({
-        title: 'Editar Ganancias y Viajes',
+        title: 'Detalles del Conductor',
         html: `
-          <p>Conductor: ${chofer.nombre}</p>
-          <p>Unidad: ${chofer.unidad}</p>
-          <input type="date" id="fecha" class="swal2-input" value="${item.fecha}">
-          <input type="number" id="ganancias" class="swal2-input" value="${item.ganancias}">
-          <input type="number" id="viajes" class="swal2-input" value="${item.viajes}">
+          <p><strong>ID:</strong> ${chofer.id}</p>
+          <p><strong>Nombre:</strong> ${chofer.nombre}</p>
+          <p><strong>Teléfono:</strong> ${chofer.telefono}</p>
+          <p><strong>Unidad:</strong> ${chofer.unidad}</p>
+          <p><strong>Ganancia:</strong> ${chofer.ganancia}</p>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        preConfirm: () => {
-          const fecha = document.getElementById('fecha').value;
-          const ganancias = document.getElementById('ganancias').value;
-          const viajes = document.getElementById('viajes').value;
-
-          if (!fecha || !ganancias || !viajes) {
-            Swal.showValidationMessage('Por favor complete todos los campos');
-            return null;
-          }
-
-          return { fecha, ganancias, viajes };
-        }
-      }).then((result) => {
-        if (result.isConfirmed && result.value) {
-          const updatedData = data.map(item =>
-            item.id === id ? { ...item, ...result.value } : item
-          );
-          setData(updatedData);
-          localStorage.setItem('gananciasData', JSON.stringify(updatedData));
-          Swal.fire('Guardado!', 'Los datos han sido actualizados.', 'success');
-        }
+        confirmButtonText: 'Cerrar'
       });
-    } else {
-      Swal.fire('Error', 'No se encontró el conductor o los datos', 'error');
     }
   };
 
-  const calculateTotalGanancias = () => {
-    return data.reduce((total, item) => total + parseFloat(item.ganancias || 0), 0);
-  };
-
-  const calculateQuincenalPago = () => {
-    const totalGanancias = calculateTotalGanancias();
-    return totalGanancias * 0.5;
-  };
-
   const handleBack = () => {
-    navigate('/optionsadmin'); 
+    // Aquí puedes definir la acción al hacer clic en "Regresar"
+    // Por ejemplo, redirigir a otra página o realizar alguna acción específica
+    window.history.back(); // Redirige a la página anterior en el historial del navegador
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-400 to-blue-500">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Ver Listas y Ganancias</h2>
-        <table className="min-w-full bg-white border mb-6">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 border">ID Conductor</th>
-              <th className="px-4 py-2 border">Fecha</th>
-              <th className="px-4 py-2 border">Ganancias</th>
-              <th className="px-4 py-2 border">Viajes</th>
-              <th className="px-4 py-2 border">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.length > 0 ? (
-              data.map(item => (
-                <tr key={item.id}>
-                  <td className="px-4 py-2 border">{item.choferId}</td>
-                  <td className="px-4 py-2 border">{item.fecha}</td>
-                  <td className="px-4 py-2 border">{item.ganancias}</td>
-                  <td className="px-4 py-2 border">{item.viajes}</td>
-                  <td className="px-4 py-2 border text-center">
+    <div className="min-h-screen bg-gradient-to-b from-green-400 to-blue-500 flex flex-col items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-2xl font-bold mb-6">Lista de Conductores</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ganancia</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {choferes.map((chofer) => (
+                <tr key={chofer.id} className="even:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.unidad}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.ganancia}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                     <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded"
-                      onClick={() => handleEditData(item.id)}
+                      onClick={() => handleEdit(chofer)}
+                      className="bg-yellow-500 text-white p-2 rounded mr-2 hover:bg-yellow-700 transition duration-300"
                     >
                       Editar
                     </button>
                     <button
-                      className="px-4 py-2 bg-red-500 text-white rounded ml-2"
-                      onClick={() => handleDeleteData(item.id)}
+                      onClick={() => handleShowDetails(chofer.id)}
+                      className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300"
                     >
-                      Eliminar
+                      Ver Detalles
                     </button>
                   </td>
                 </tr>
-              ))
-            ) : (
+              ))}
+            </tbody>
+            <tfoot>
               <tr>
-                <td className="px-4 py-2 border text-center" colSpan="5">
-                  No hay datos disponibles
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200" colSpan="2">Total Ganancia</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{totalGanancia}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200"></td>
               </tr>
-            )}
-          </tbody>
-        </table>
-        <div className="flex justify-between">
-          <button
-            className="px-4 py-2 bg-gray-500 text-white rounded"
-            onClick={handleBack}
-          >
-            Regresar
-          </button>
-          <div>
-            <p className="text-lg font-bold">Ganancias Quincenales: ${calculateQuincenalPago().toFixed(2)}</p>
-          </div>
+            </tfoot>
+          </table>
         </div>
+        <button
+          onClick={handleBack}
+          className="mt-4 bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300"
+        >
+          Regresar
+        </button>
       </div>
     </div>
   );

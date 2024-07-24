@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
 function GananciasContent() {
-  const [id, setId] = useState('');
-  const [ganancias, setGanancias] = useState('');
-  const [choferes, setChoferes] = useState([]);
+  const [formData, setFormData] = useState({
+    id: '',
+    ganancia: '',
+    horas: '',
+    fecha: ''
+  });
 
-  useEffect(() => {
-    const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    setChoferes(choferesData);
-  }, []);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
-  const handleSubmit = (e) => {
+  const handleRegisterGanancia = (e) => {
     e.preventDefault();
-    
-    const chofer = choferes.find(c => c.id === parseInt(id, 10));
+
+    const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
+    const chofer = choferesData.find(c => c.id === formData.id);
+
     if (!chofer) {
       Swal.fire({
         icon: 'error',
@@ -25,52 +33,86 @@ function GananciasContent() {
       return;
     }
 
-    const data = {
-      id: id,
-      ganancias: parseFloat(ganancias),
-      timestamp: new Date().toLocaleString()
-    };
+    const newGanancia = { ...formData, nombre: chofer.nombre };
+    chofer.ganancias = chofer.ganancias || [];
+    chofer.ganancias.push(newGanancia);
 
-    const existingData = JSON.parse(localStorage.getItem('gananciasData')) || [];
-    existingData.push(data);
-    localStorage.setItem('gananciasData', JSON.stringify(existingData));
+    const updatedChoferesData = choferesData.map(c => c.id === chofer.id ? chofer : c);
+    localStorage.setItem('choferesData', JSON.stringify(updatedChoferesData));
+
+    setFormData({
+      id: '',
+      ganancia: '',
+      horas: '',
+      fecha: ''
+    });
 
     Swal.fire({
       icon: 'success',
-      title: 'Datos registrados',
-      text: `Se han registrado las ganancias exitosamente para ${chofer.nombre}`,
+      title: 'Ganancia registrada',
+      text: 'La ganancia ha sido registrada exitosamente',
       confirmButtonText: 'OK'
     });
-
-    setId('');
-    setGanancias('');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-400 to-blue-500">
+    <div className="min-h-screen bg-gradient-to-b from-green-400 to-blue-500 flex flex-col items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6">Registrar Ganancias</h2>
-        <form onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold mb-6">Registrar Ganancia</h2>
+        <form onSubmit={handleRegisterGanancia}>
           <div className="mb-4">
-            <label className="block text-lg font-semibold mb-2">ID del Conductor</label>
-            <input 
-              type="text" 
-              value={id} 
-              onChange={(e) => setId(e.target.value)} 
-              className="w-full p-3 border rounded-lg text-lg" 
+            <label htmlFor="id" className="block text-gray-700 font-bold mb-2">ID de Conductor:</label>
+            <input
+              type="text"
+              id="id"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-lg font-semibold mb-2">Ganancias</label>
-            <input 
-              type="text" 
-              value={ganancias} 
-              onChange={(e) => setGanancias(e.target.value)} 
-              className="w-full p-3 border rounded-lg text-lg" 
+            <label htmlFor="ganancia" className="block text-gray-700 font-bold mb-2">Ganancia:</label>
+            <input
+              type="number"
+              id="ganancia"
+              name="ganancia"
+              value={formData.ganancia}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
             />
           </div>
-          <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition-colors">
-            Registrar
+          <div className="mb-4">
+            <label htmlFor="horas" className="block text-gray-700 font-bold mb-2">Horas Trabajadas:</label>
+            <input
+              type="number"
+              id="horas"
+              name="horas"
+              value={formData.horas}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="fecha" className="block text-gray-700 font-bold mb-2">Fecha:</label>
+            <input
+              type="date"
+              id="fecha"
+              name="fecha"
+              value={formData.fecha}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-700 transition duration-300"
+          >
+            Registrar Ganancia
           </button>
         </form>
       </div>

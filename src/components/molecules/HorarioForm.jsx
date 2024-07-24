@@ -34,7 +34,7 @@ function HorarioForm() {
     e.preventDefault();
 
     const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    const chofer = choferesData.find(c => c.id === parseInt(formData.id, 10));
+    const chofer = choferesData.find(c => c.id === formData.id);
 
     if (!chofer) {
       Swal.fire({
@@ -53,9 +53,13 @@ function HorarioForm() {
       timestamp: new Date().toLocaleString()
     };
 
-    const existingData = JSON.parse(localStorage.getItem('horarioDataList')) || [];
-    existingData.push(currentData);
-    localStorage.setItem('horarioDataList', JSON.stringify(existingData));
+    const existingHorarioData = JSON.parse(localStorage.getItem('horarioDataList')) || [];
+    existingHorarioData.push(currentData);
+    localStorage.setItem('horarioDataList', JSON.stringify(existingHorarioData));
+
+    const existingReporteData = JSON.parse(localStorage.getItem('reporteDataList')) || [];
+    existingReporteData.push(currentData);
+    localStorage.setItem('reporteDataList', JSON.stringify(existingReporteData));
 
     if (formData.reporteProblemas) {
       addNotification(`Nuevo reporte de problemas: ${formData.reporteProblemas}`);
@@ -196,8 +200,11 @@ function HorarioForm() {
         </div>
       </div>
       <div className="flex justify-between mt-6">
-        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition-colors">
+        <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg text-lg hover:bg-blue-700 transition duration-300">
           Enviar
+        </button>
+        <button type="button" onClick={() => navigate('/options')} className="bg-red-500 text-white p-3 rounded-lg text-lg hover:bg-red-700 transition duration-300">
+          Regresar
         </button>
       </div>
     </form>
