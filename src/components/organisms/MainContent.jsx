@@ -22,7 +22,7 @@ function MainContent() {
   return (
     <main className="flex flex-col items-center p-4 bg-gradient-to-b from-green-400 to-blue-500 text-white min-h-screen">
       <section className="w-full max-w-screen-lg text-center mb-4">
-        <h1 className="text-4xl font-bold mb-6">URBAN ROUTER EXPLORER</h1>
+        <h1 className="text-4xl font-bold mb-6">Urban Router Explorer</h1>
         <Carousel />
       </section>
       <section className="w-full max-w-screen-lg bg-white bg-opacity-30 text-black p-8 rounded-lg shadow-lg mb-6">
