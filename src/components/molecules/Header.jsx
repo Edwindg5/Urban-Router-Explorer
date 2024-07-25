@@ -16,7 +16,7 @@ function Header() {
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
-      setUnreadCount(0); // Reset unread count when notifications are viewed
+      setUnreadCount(0); 
     }
   };
 
@@ -32,7 +32,6 @@ function Header() {
         <Link to="/informacion" className="mr-4">Información</Link>
         <Link to="/estacion" className="mr-4">Estación</Link>
         <Link to="/login" className="mr-4">Login</Link>
-        {/* Icono de notificación */}
         <button 
           onClick={toggleNotifications} 
           className="relative bg-red-500 text-white p-2 rounded-full focus:outline-none"
