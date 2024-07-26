@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function CumplimientoHorario() {
   const [horarioData, setHorarioData] = useState([]);
@@ -22,7 +23,7 @@ function CumplimientoHorario() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-400 to-blue-500 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-green-400 to-blue-500 flex flex-col items-center justify-center p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
         <h2 className="text-2xl font-bold mb-6 text-center">Choferes y su Cumplimiento de Horario</h2>
         <div className="overflow-x-auto">
@@ -73,6 +74,11 @@ function CumplimientoHorario() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="mt-6 flex justify-center">
+          <Link to="/optionschecador" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Regresar
+          </Link>
         </div>
       </div>
     </div>
