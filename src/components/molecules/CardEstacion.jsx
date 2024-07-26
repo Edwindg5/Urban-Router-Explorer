@@ -13,6 +13,7 @@ function CardEstacion({ imageSrc, imageAlt, title, description }) {
       </div>
     </div>
   );
+  
 }
 
 export default CardEstacion;
