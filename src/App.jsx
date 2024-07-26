@@ -23,6 +23,8 @@ import CumplimientoDeHorario from './pages/CumplimientoDeHorarioPage';
 import ChoferesPage from './pages/ChoferesPage';
 import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
 import VerListas from './pages/VerListas';
+import ReporteDescriptivo from './pages/ReporteDescriptivo';
+
 
 const PrivateRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
@@ -46,7 +48,7 @@ function App() {
             <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} />} />
             <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} />} />
             <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
-            <Route path="/taller" element={<PrivateRoute element={<Taller />} />} />
+            <Route path="/admin/urbans" element={<PrivateRoute element={<Taller />} />} />
             <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />
             <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
             <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />

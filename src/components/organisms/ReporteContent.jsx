@@ -9,6 +9,8 @@ function ReporteContent() {
     setReporteDataList(data);
   }, []);
 
+  
+
   const handleDelete = (index) => {
     const updatedList = reporteDataList.filter((_, i) => i !== index);
     setReporteDataList(updatedList);
