@@ -11,6 +11,32 @@ function LoginForm() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+
+
+
+
+
+  const LoginForm = () => {
+    const [inventory, setInventory] = useState([]);
+    const [currentAction, setCurrentAction] = useState('add');
+  
+    const fetchInventory = async () => {
+      try {
+        const response = await axios.get('ivy.urbanrouteexplorer.xyz');
+        setInventory(response.data);
+      } catch (error) {
+        console.error('Error fetching inventory:', error);
+      }
+    };
+  
+  };
+
+
+
+
+
+  
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
