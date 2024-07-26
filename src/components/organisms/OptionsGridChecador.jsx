@@ -16,7 +16,7 @@ function OptionsGridChecador() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
       {options.map((option) => (
         <OptionCardChecador key={option.title} {...option} />
       ))}

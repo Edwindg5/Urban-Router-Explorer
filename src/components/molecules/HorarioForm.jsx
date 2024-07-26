@@ -53,11 +53,14 @@ function HorarioForm() {
       timestamp: new Date().toLocaleString()
     };
 
-    const existingData = JSON.parse(localStorage.getItem('horarioDataList')) || [];
-    existingData.push(currentData);
-    localStorage.setItem('horarioDataList', JSON.stringify(existingData));
+    const existingHorarioData = JSON.parse(localStorage.getItem('horarioDataList')) || [];
+    existingHorarioData.push(currentData);
+    localStorage.setItem('horarioDataList', JSON.stringify(existingHorarioData));
 
-    // Agregar notificación
+    const existingReporteData = JSON.parse(localStorage.getItem('reporteDataList')) || [];
+    existingReporteData.push(currentData);
+    localStorage.setItem('reporteDataList', JSON.stringify(existingReporteData));
+
     if (formData.reporteProblemas) {
       addNotification(`Nuevo reporte de problemas: ${formData.reporteProblemas}`);
     }

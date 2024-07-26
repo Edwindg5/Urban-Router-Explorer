@@ -3,7 +3,7 @@ import OptionsGridChecador from '../components/organisms/OptionsGridChecador';
 
 function ChecadorOptions() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-green-400 to-blue-500 flex items-center justify-center p-6">
       <OptionsGridChecador />
     </div>
   );

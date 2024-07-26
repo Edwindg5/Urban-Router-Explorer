@@ -27,7 +27,7 @@ function ReporteContent() {
             <tr>
               <th className="px-4 py-2 border">Fecha y Hora</th>
               <th className="px-4 py-2 border">Conductor</th>
-              <th className="px-4 py-2 border">Reporte Descriptivo</th>
+              <th className="px-4 py-2 border">Reporte General</th>
               <th className="px-4 py-2 border">Fallas de la Unidad</th>
               <th className="px-4 py-2 border">Problemas en la Carretera</th>
               <th className="px-4 py-2 border">Origen</th>
@@ -40,7 +40,7 @@ function ReporteContent() {
               <tr key={index}>
                 <td className="px-4 py-2 border">{data.timestamp}</td>
                 <td className="px-4 py-2 border">{data.nombre}</td>
-                <td className="px-4 py-2 border">{data.reporteDescriptivo}</td>
+                <td className="px-4 py-2 border">{data.reporteGeneral}</td>
                 <td className="px-4 py-2 border">{data.reporteFallas}</td>
                 <td className="px-4 py-2 border">{data.reporteProblemas}</td>
                 <td className="px-4 py-2 border">{data.origen}</td>
