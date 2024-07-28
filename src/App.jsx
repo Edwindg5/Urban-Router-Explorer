@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Conductor from './pages/Conductor';
 import Header from './components/molecules/Header';
@@ -10,9 +10,8 @@ import ConductorOptions from './pages/ConductorOptions';
 import ChecadorOptions from './pages/ChecadorOptions';
 import Administrador from './pages/Administrador';
 import Horario from './pages/Horario';
-import Urban from './pages/Urbans';
+import Urbans from './pages/Urbans';
 import Reporte from './pages/Reporte';
-import ReporteForm from './components/molecules/ReporteForm';
 import Tarifa from './pages/Tarifa';
 import Ganancias from './pages/Ganancias';
 import ReporteProblemas from './pages/ReporteProblemas';
@@ -24,7 +23,6 @@ import ChoferesPage from './pages/ChoferesPage';
 import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
 import VerListas from './pages/VerListas';
 import ReporteDescriptivo from './pages/ReporteDescriptivo';
-import Urbans from './components/organisms/Urbans';
 
 
 const PrivateRoute = ({ element }) => {
@@ -33,6 +31,8 @@ const PrivateRoute = ({ element }) => {
 };
 
 function App() {
+  const location = useLocation();
+
   return (
     <AuthProvider>
       <NotificationProvider>
@@ -58,9 +58,9 @@ function App() {
             <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} />} />
             <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} />} />
             <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} />} />
-            <Route path='/ver_listas'  element={<PrivateRoute element={<VerListas/>}/>}/>
+            <Route path='/ver_listas'  element={<PrivateRoute element={<VerListas />} />} />
           </Routes>
-          <Footer />
+          {location.pathname === '/' && <Footer />}
         </div>
       </NotificationProvider>
     </AuthProvider>
@@ -68,4 +68,3 @@ function App() {
 }
 
 export default App;
-
