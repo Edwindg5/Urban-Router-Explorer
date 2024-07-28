@@ -21,7 +21,7 @@ function LoginForm() {
     const [inventory, setInventory] = useState([]);
     const [currentAction, setCurrentAction] = useState('add');
   
-    const fetchInventory = async () => {
+    const LoginInventori = async () => {
       try {
         const response = await axios.get('ivy.urbanrouteexplorer.xyz');
         setInventory(response.data);
