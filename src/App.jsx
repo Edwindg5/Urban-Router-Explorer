@@ -10,7 +10,7 @@ import ConductorOptions from './pages/ConductorOptions';
 import ChecadorOptions from './pages/ChecadorOptions';
 import Administrador from './pages/Administrador';
 import Horario from './pages/Horario';
-import Taller from './pages/Taller';
+import Urban from './pages/Urbans';
 import Reporte from './pages/Reporte';
 import ReporteForm from './components/molecules/ReporteForm';
 import Tarifa from './pages/Tarifa';
@@ -24,6 +24,7 @@ import ChoferesPage from './pages/ChoferesPage';
 import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
 import VerListas from './pages/VerListas';
 import ReporteDescriptivo from './pages/ReporteDescriptivo';
+import Urbans from './components/organisms/Urbans';
 
 
 const PrivateRoute = ({ element }) => {
@@ -48,7 +49,7 @@ function App() {
             <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} />} />
             <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} />} />
             <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
-            <Route path="/admin/urbans" element={<PrivateRoute element={<Taller />} />} />
+            <Route path="/admin/Urbans" element={<PrivateRoute element={<Urbans />} />} />
             <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />
             <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
             <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />
