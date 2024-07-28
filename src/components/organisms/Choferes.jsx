@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ChoferesForm from '../molecules/ChoferesForm';
 
 function Choferes() {
-  const [choferes, setChoferes] = useState(JSON.parse(localStorage.getItem('choferesData')) || []);
+  const [choferes, setChoferes] = useState([]);
   const [unidadesDisponibles, setUnidadesDisponibles] = useState([]);
 
   useEffect(() => {
@@ -13,13 +13,8 @@ function Choferes() {
     setUnidadesDisponibles(unidades);
   }, []);
 
-  
-
-  const handleRegister = (chofer) => {
-    const newChofer = { ...chofer, id: Date.now() };
-    const newChoferes = [...choferes, newChofer];
-    setChoferes(newChoferes);
-    localStorage.setItem('choferesData', JSON.stringify(newChoferes));
+  const handleRegister = (newChofer) => {
+    setChoferes((prevChoferes) => [...prevChoferes, newChofer]);
   };
 
   return (

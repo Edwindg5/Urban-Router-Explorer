@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
-function ChoferesForm({ unidadesDisponibles }) {
+function ChoferesForm({ unidadesDisponibles, onRegister }) {
   const [formData, setFormData] = useState({
-    id: '',
     nombre: '',
+    email: '',
     telefono: '',
-    correo: '',
-    contraseña: '',
-    unidad: ''
+    password: ''
   });
 
   const navigate = useNavigate();
@@ -22,12 +21,12 @@ function ChoferesForm({ unidadesDisponibles }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { id, nombre, telefono, correo, contraseña, unidad } = formData;
+    const { nombre, email, telefono, password } = formData;
 
-    if (!id || !nombre || !telefono || !correo || !contraseña || !unidad) {
+    if (!nombre || !email || !telefono || !password) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -47,57 +46,63 @@ function ChoferesForm({ unidadesDisponibles }) {
       return;
     }
 
-    const choferesData = JSON.parse(localStorage.getItem('choferesData')) || [];
-    const choferesPorUnidad = choferesData.filter(chofer => chofer.unidad === unidad);
+    const choferData = {
+      full_name: nombre,
+      email,
+      phone: telefono,
+      password,
+      role_id: 4, 
+      created_by: 'denzel',
+      updated_by: 'denzel',
+      deleted: '0'
+    };
 
-    if (choferesPorUnidad.length >= 2) {
+    try {
+      const response = await axios.post('http://ivy.urbanrouteexplorer.xyz/api/user', choferData);
+      Swal.fire({
+        icon: 'success',
+        title: 'Registrado',
+        text: 'El conductor ha sido registrado exitosamente',
+        confirmButtonText: 'OK'
+      });
+
+      setFormData({
+        nombre: '',
+        email: '',
+        telefono: '',
+        password: ''
+      });
+
+      onRegister(response.data); // Llama a la función de registro
+    } catch (error) {
+      console.error('Error registrando chofer:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Cada unidad solo puede tener 2 conductores',
+        text: 'Hubo un problema al registrar el conductor. Por favor, inténtelo de nuevo.',
         confirmButtonText: 'OK'
       });
-      return;
     }
-
-    choferesData.push(formData);
-    localStorage.setItem('choferesData', JSON.stringify(choferesData));
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Registrado',
-      text: 'El conductor ha sido registrado exitosamente',
-      confirmButtonText: 'OK'
-    });
-
-    setFormData({
-      id: '',
-      nombre: '',
-      telefono: '',
-      correo: '',
-      contraseña: '',
-      unidad: ''
-    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 "> 
-      <div>
-        <label className="block mb-1">ID del Conductor</label>
-        <input 
-          type="text" 
-          name="id" 
-          value={formData.id} 
-          onChange={handleChange} 
-          className="w-full p-2 border rounded"
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-1">Nombre Completo</label>
         <input 
           type="text" 
           name="nombre" 
           value={formData.nombre} 
+          onChange={handleChange} 
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1">Correo Electrónico</label>
+        <input 
+          type="email" 
+          name="email" 
+          value={formData.email} 
           onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
@@ -113,38 +118,14 @@ function ChoferesForm({ unidadesDisponibles }) {
         />
       </div>
       <div>
-        <label className="block mb-1">Correo Electrónico</label>
-        <input 
-          type="email" 
-          name="correo" 
-          value={formData.correo} 
-          onChange={handleChange} 
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div>
         <label className="block mb-1">Contraseña</label>
         <input 
           type="password" 
-          name="contraseña" 
-          value={formData.contraseña} 
+          name="password" 
+          value={formData.password} 
           onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
-      </div>
-      <div>
-        <label className="block mb-1">Unidad</label>
-        <select 
-          name="unidad" 
-          value={formData.unidad} 
-          onChange={handleChange} 
-          className="w-full p-2 border rounded"
-        >
-          <option value="">Seleccione una unidad</option>
-          {unidadesDisponibles.map((unidad, index) => (
-            <option key={index} value={unidad}>{unidad}</option>
-          ))}
-        </select>
       </div>
       <div className="flex justify-between">
         <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300">
