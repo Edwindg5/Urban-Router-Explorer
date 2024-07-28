@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 function ListaDeChoferes() {
   const navigate = useNavigate();
   const [choferes, setChoferes] = useState(JSON.parse(localStorage.getItem('choferesData')) || []);
+  const [unidades, setUnidades] = useState(JSON.parse(localStorage.getItem('unidadesData')) || []);
   const [editingChofer, setEditingChofer] = useState(null);
   const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', unidad: '' });
 
@@ -12,6 +13,14 @@ function ListaDeChoferes() {
     const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
     setChoferes(updatedChoferes);
     localStorage.setItem('choferesData', JSON.stringify(updatedChoferes));
+
+    const updatedUnidades = unidades.map(unidad => ({
+      ...unidad,
+      choferes: unidad.choferes.filter(choferId => choferId !== id)
+    }));
+    setUnidades(updatedUnidades);
+    localStorage.setItem('unidadesData', JSON.stringify(updatedUnidades));
+
     Swal.fire('Eliminado', 'El chofer ha sido eliminado', 'success');
   };
 
@@ -31,6 +40,20 @@ function ListaDeChoferes() {
     );
     setChoferes(updatedChoferes);
     localStorage.setItem('choferesData', JSON.stringify(updatedChoferes));
+
+    const updatedUnidades = unidades.map(unidad => {
+      if (unidad.nombre === formData.unidad) {
+        if (!unidad.choferes.includes(formData.id)) {
+          unidad.choferes.push(formData.id);
+        }
+      } else {
+        unidad.choferes = unidad.choferes.filter(choferId => choferId !== formData.id);
+      }
+      return unidad;
+    });
+    setUnidades(updatedUnidades);
+    localStorage.setItem('unidadesData', JSON.stringify(updatedUnidades));
+
     setEditingChofer(null);
     Swal.fire('Guardado', 'Los cambios han sido guardados', 'success');
   };
@@ -48,7 +71,7 @@ function ListaDeChoferes() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
+          <table className="min-w-full bg-white border border-gray-200 mb-6">
             <thead>
               <tr>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
@@ -96,6 +119,23 @@ function ListaDeChoferes() {
                       </>
                     )}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h2 className="text-2xl font-bold mb-4">Lista de Unidades</h2>
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID de Conductores</th>
+              </tr>
+            </thead>
+            <tbody>
+              {unidades.map((unidad, index) => (
+                <tr key={index} className="even:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.nombre}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.choferes.join(', ')}</td>
                 </tr>
               ))}
             </tbody>
