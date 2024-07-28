@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../atoms/AuthContext';
 import LinkButtonChecador from '../atoms/LinkButtonChecador';
 import ButtonChecador from '../atoms/ButtonChecador';
+import Swal from 'sweetalert2';
 
 
 function LoginForm() {
@@ -50,7 +51,7 @@ function LoginForm() {
       login();
       navigate('/optionsadmin')
     } else {
-      alert('Credenciales incorrectas');
+      Swal.fire('Credenciales incorrectas');
     }
   };
 
