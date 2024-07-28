@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-function ChoferesForm({ onRegister }) {
+function ChoferesForm({ unidadesDisponibles, onRegister }) {
   const [formData, setFormData] = useState({
     nombre: '',
+    email: '',
     telefono: '',
-    correo: '',
-    contraseña: ''
+    password: ''
   });
 
   const navigate = useNavigate();
@@ -24,9 +24,9 @@ function ChoferesForm({ onRegister }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { nombre, telefono, correo, contraseña } = formData;
+    const { nombre, email, telefono, password } = formData;
 
-    if (!nombre || !telefono || !correo || !contraseña) {
+    if (!nombre || !email || !telefono || !password) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -46,50 +46,63 @@ function ChoferesForm({ onRegister }) {
       return;
     }
 
+    const choferData = {
+      full_name: nombre,
+      email,
+      phone: telefono,
+      password,
+      role_id: 4, 
+      created_by: 'denzel',
+      updated_by: 'denzel',
+      deleted: '0'
+    };
+
     try {
-      const response = await axios.post('http://ivy.urbanrouteexplorer.xyz/api/user', {
-        full_name: nombre,
-        email: correo,
-        phone: telefono,
-        role_id: 4, // Suponiendo que '1' es el role_id para chofer
-        password: contraseña
+      const response = await axios.post('http://ivy.urbanrouteexplorer.xyz/api/user', choferData);
+      Swal.fire({
+        icon: 'success',
+        title: 'Registrado',
+        text: 'El conductor ha sido registrado exitosamente',
+        confirmButtonText: 'OK'
       });
 
-      if (response.status === 201) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Registrado',
-          text: 'El conductor ha sido registrado exitosamente',
-          confirmButtonText: 'OK'
-        });
+      setFormData({
+        nombre: '',
+        email: '',
+        telefono: '',
+        password: ''
+      });
 
-        onRegister(formData);
-        setFormData({
-          nombre: '',
-          telefono: '',
-          correo: '',
-          contraseña: ''
-        });
-      }
+      onRegister(response.data); // Llama a la función de registro
     } catch (error) {
+      console.error('Error registrando chofer:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Hubo un error al registrar el conductor. Intente nuevamente.',
+        text: 'Hubo un problema al registrar el conductor. Por favor, inténtelo de nuevo.',
         confirmButtonText: 'OK'
       });
-      console.error('Error registering driver:', error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4"> 
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-1">Nombre Completo</label>
         <input 
           type="text" 
           name="nombre" 
           value={formData.nombre} 
+          onChange={handleChange} 
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1">Correo Electrónico</label>
+        <input 
+          type="email" 
+          name="email" 
+          value={formData.email} 
           onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
@@ -105,21 +118,11 @@ function ChoferesForm({ onRegister }) {
         />
       </div>
       <div>
-        <label className="block mb-1">Correo Electrónico</label>
-        <input 
-          type="email" 
-          name="correo" 
-          value={formData.correo} 
-          onChange={handleChange} 
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div>
         <label className="block mb-1">Contraseña</label>
         <input 
           type="password" 
-          name="contraseña" 
-          value={formData.contraseña} 
+          name="password" 
+          value={formData.password} 
           onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
@@ -128,7 +131,7 @@ function ChoferesForm({ onRegister }) {
         <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300">
           Registrar
         </button>
-        <button type="button" onClick={() => navigate(-1)} className="bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300">
+        <button type="button" onClick={() => navigate('/optionsadmin')} className="bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300">
           Regresar
         </button>
       </div>
