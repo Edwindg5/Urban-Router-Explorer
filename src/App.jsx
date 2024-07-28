@@ -10,7 +10,7 @@ import ConductorOptions from './pages/ConductorOptions';
 import ChecadorOptions from './pages/ChecadorOptions';
 import Administrador from './pages/Administrador';
 import Horario from './pages/Horario';
-import Urban from './pages/Urbans';
+import Urbans from './pages/Urbans';
 import Reporte from './pages/Reporte';
 import Tarifa from './pages/Tarifa';
 import Ganancias from './pages/Ganancias';
