@@ -11,7 +11,7 @@ function AdminOptions() {
       <ButtonLinkAdmin to="/admin/choferes" image={choferesImg}>Choferes</ButtonLinkAdmin>
       <ButtonLinkAdmin to="/admin/urbans" image={urbansImg}>Urbans</ButtonLinkAdmin>
       <ButtonLinkAdmin to="/admin/listas" image={listasImg}>Listas</ButtonLinkAdmin>
-      <ButtonLinkAdmin to="/ver_listas" image={verListasImg}>Ver listas</ButtonLinkAdmin>
+      <ButtonLinkAdmin to="/ver_listas" image={verListasImg}>Reportes</ButtonLinkAdmin>
     </div>
   );
 }

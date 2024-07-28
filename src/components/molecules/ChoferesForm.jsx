@@ -7,6 +7,8 @@ function ChoferesForm({ unidadesDisponibles }) {
     id: '',
     nombre: '',
     telefono: '',
+    correo: '',
+    contraseña: '',
     unidad: ''
   });
 
@@ -23,9 +25,9 @@ function ChoferesForm({ unidadesDisponibles }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { id, nombre, telefono, unidad } = formData;
+    const { id, nombre, telefono, correo, contraseña, unidad } = formData;
 
-    if (!id || !nombre || !telefono || !unidad) {
+    if (!id || !nombre || !telefono || !correo || !contraseña || !unidad) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -72,6 +74,8 @@ function ChoferesForm({ unidadesDisponibles }) {
       id: '',
       nombre: '',
       telefono: '',
+      correo: '',
+      contraseña: '',
       unidad: ''
     });
   };
@@ -104,6 +108,26 @@ function ChoferesForm({ unidadesDisponibles }) {
           type="text" 
           name="telefono" 
           value={formData.telefono} 
+          onChange={handleChange} 
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1">Correo Electrónico</label>
+        <input 
+          type="email" 
+          name="correo" 
+          value={formData.correo} 
+          onChange={handleChange} 
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1">Contraseña</label>
+        <input 
+          type="password" 
+          name="contraseña" 
+          value={formData.contraseña} 
           onChange={handleChange} 
           className="w-full p-2 border rounded"
         />
