@@ -1,25 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function CumplimientoHorario() {
+  const [conductores, setConductores] = useState([]);
   const [horarioData, setHorarioData] = useState([]);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('horarioDataList')) || [];
-    setHorarioData(data);
+    fetch('http://ivy.urbanrouteexplorer.xyz/api/user')
+      .then(response => response.json())
+      .then(data => {
+        const conductores = data.filter(user => user.role_id === 4);
+        setConductores(conductores);
+      })
+      .catch(error => console.error('Error fetching conductores:', error));
   }, []);
 
-  const markAsVerified = (index, status) => {
-    const updatedData = [...horarioData];
-    updatedData[index].verified = status;
-    setHorarioData(updatedData);
-    localStorage.setItem('horarioDataList', JSON.stringify(updatedData));
+  const handleHorarioChange = (index, field, value) => {
+    const newHorarioData = [...horarioData];
+    if (!newHorarioData[index]) {
+      newHorarioData[index] = { user_id: conductores[index].user_id };
+    }
+    newHorarioData[index][field] = value;
+    setHorarioData(newHorarioData);
   };
 
-  const deleteRecord = (index) => {
-    const updatedData = horarioData.filter((_, i) => i !== index);
-    setHorarioData(updatedData);
-    localStorage.setItem('horarioDataList', JSON.stringify(updatedData));
+  const handleSave = (index) => {
+    const now = new Date();
+    const horario = horarioData[index];
+    const work_date = now.toISOString().split('T')[0];
+    const created_by = 'denzel';
+    const updated_by = 'denzel';
+    const deleted = '0';
+
+    const horarioTrabajoData = {
+      user_id: horario.user_id,
+      work_date: work_date,
+      start_time: horario.start_time,
+      end_time: horario.end_time,
+      created_by: created_by,
+      updated_by: updated_by,
+      deleted: deleted,
+    };
+
+    fetch('http://ivy.urbanrouteexplorer.xyz/api/horario_trabajo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(horarioTrabajoData)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error al guardar los datos del horario de trabajo');
+      }
+      return response.json();
+    })
+    .then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Datos guardados',
+        text: 'La información del horario de trabajo se ha guardado exitosamente',
+        confirmButtonText: 'OK'
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonText: 'OK'
+      });
+    });
   };
 
   return (
@@ -30,44 +82,40 @@ function CumplimientoHorario() {
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
-                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Hora de Entrada</th>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Hora de Salida</th>
-                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Trabajó Hoy</th>
-                <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Verificación</th>
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {horarioData.map((horario, index) => (
+              {conductores.map((conductor, index) => (
                 <tr key={index} className="even:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{horario.unidad}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{horario.horaEntrada}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{horario.horaSalida}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{horario.trabajar ? 'Sí' : 'No'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{conductor.user_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{conductor.full_name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                    {horario.verified === true && '✅'}
-                    {horario.verified === false && '❌'}
-                    {horario.verified === undefined && 'Pendiente'}
+                    <input
+                      type="time"
+                      value={horarioData[index]?.start_time || ''}
+                      onChange={(e) => handleHorarioChange(index, 'start_time', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200 flex space-x-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                    <input
+                      type="time"
+                      value={horarioData[index]?.end_time || ''}
+                      onChange={(e) => handleHorarioChange(index, 'end_time', e.target.value)}
+                      className="w-full p-2 border rounded"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                     <button
-                      className="bg-green-500 text-white px-2 py-1 rounded mr-2"
-                      onClick={() => markAsVerified(index, true)}
+                      onClick={() => handleSave(index)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
                     >
-                      ✅
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded mr-2"
-                      onClick={() => markAsVerified(index, false)}
-                    >
-                      ❌
-                    </button>
-                    <button
-                      className="bg-gray-500 text-white px-2 py-1 rounded"
-                      onClick={() => deleteRecord(index)}
-                    >
-                      🗑️
+                      Guardar
                     </button>
                   </td>
                 </tr>
@@ -76,7 +124,7 @@ function CumplimientoHorario() {
           </table>
         </div>
         <div className="mt-6 flex justify-center">
-          <Link to="/optionschecador" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link to="/optionschecador" className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300">
             Regresar
           </Link>
         </div>
