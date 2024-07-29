@@ -1,42 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import axios from 'axios';
+import ChoferesForm from '../molecules/ChoferesForm';
 function ListaDeChoferes() {
   const navigate = useNavigate();
   const [choferes, setChoferes] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [editingChofer, setEditingChofer] = useState(null);
-  const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', unidad: '' });
+  const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', email: '' });
   const [showTable, setShowTable] = useState('conductores'); // 'conductores' or 'unidades'
 
   useEffect(() => {
-    const storedChoferes = JSON.parse(localStorage.getItem('choferesData')) || [];
+    fetchChoferes();
     const storedUnidades = JSON.parse(localStorage.getItem('unidadesData')) || [];
-    console.log('Loaded choferes:', storedChoferes); // Agrega esta línea
-    console.log('Loaded unidades:', storedUnidades); // Agrega esta línea
-    setChoferes(storedChoferes);
     setUnidades(storedUnidades);
   }, []);
 
-  const handleDelete = (id) => {
-    const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
-    setChoferes(updatedChoferes);
-    localStorage.setItem('choferesData', JSON.stringify(updatedChoferes));
+  const fetchChoferes = async () => {
+    try {
+      const response = await axios.get('http://ivy.urbanrouteexplorer.xyz/api/user');
+      const choferesData = response.data.map(chofer => ({
+        id: chofer.user_id,
+        nombre: chofer.full_name,
+        telefono: chofer.phone,
+        email: chofer.email
+      }));
+      setChoferes(choferesData);
+    } catch (error) {
+      console.error('Error fetching choferes:', error);
+    }
+  };
 
-    const updatedUnidades = unidades.map(unidad => ({
-      ...unidad,
-      choferes: unidad.choferes.filter(choferId => choferId !== id)
-    }));
-    setUnidades(updatedUnidades);
-    localStorage.setItem('unidadesData', JSON.stringify(updatedUnidades));
-
-    Swal.fire('Eliminado', 'El chofer ha sido eliminado', 'success');
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://ivy.urbanrouteexplorer.xyz/api/user/${id}`);
+      const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
+      setChoferes(updatedChoferes);
+      Swal.fire('Eliminado', 'El chofer ha sido eliminado', 'success');
+    } catch (error) {
+      console.error('Error deleting chofer:', error);
+      Swal.fire('Error', 'Hubo un problema al eliminar el chofer.', 'error');
+    }
   };
 
   const handleEdit = (chofer) => {
     setEditingChofer(chofer.id);
-    setFormData({ id: chofer.id, nombre: chofer.nombre, telefono: chofer.telefono, unidad: chofer.unidad });
+    setFormData({ id: chofer.id, nombre: chofer.nombre, telefono: chofer.telefono, email: chofer.email });
   };
 
   const handleChange = (e) => {
@@ -44,28 +54,27 @@ function ListaDeChoferes() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = () => {
-    const updatedChoferes = choferes.map(chofer =>
-      chofer.id === editingChofer ? { ...chofer, ...formData } : chofer
-    );
-    setChoferes(updatedChoferes);
-    localStorage.setItem('choferesData', JSON.stringify(updatedChoferes));
+  const handleSave = async () => {
+    try {
+      await axios.put(`http://ivy.urbanrouteexplorer.xyz/api/user/${formData.id}`, {
+        full_name: formData.nombre,
+        phone: formData.telefono,
+        email: formData.email
+      });
+      const updatedChoferes = choferes.map(chofer =>
+        chofer.id === editingChofer ? { ...chofer, ...formData } : chofer
+      );
+      setChoferes(updatedChoferes);
+      setEditingChofer(null);
+      Swal.fire('Guardado', 'Los cambios han sido guardados', 'success');
+    } catch (error) {
+      console.error('Error saving chofer:', error);
+      Swal.fire('Error', 'Hubo un problema al guardar los cambios.', 'error');
+    }
+  };
 
-    const updatedUnidades = unidades.map(unidad => {
-      if (unidad.nombre === formData.unidad) {
-        if (!unidad.choferes.includes(formData.id)) {
-          unidad.choferes.push(formData.id);
-        }
-      } else {
-        unidad.choferes = unidad.choferes.filter(choferId => choferId !== formData.id);
-      }
-      return unidad;
-    });
-    setUnidades(updatedUnidades);
-    localStorage.setItem('unidadesData', JSON.stringify(updatedUnidades));
-
-    setEditingChofer(null);
-    Swal.fire('Guardado', 'Los cambios han sido guardados', 'success');
+  const addChofer = (newChofer) => {
+    setChoferes([...choferes, newChofer]);
   };
 
   return (
@@ -96,71 +105,74 @@ function ListaDeChoferes() {
         </div>
         <div className="overflow-x-auto">
           {showTable === 'conductores' ? (
-            <table className="min-w-full bg-white border border-gray-200 mb-6">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {choferes.map((chofer, index) => (
-                  <tr key={index} className="even:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                      {editingChofer === chofer.id ? (
-                        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="w-full p-2 border rounded" />
-                      ) : (
-                        chofer.nombre
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                      {editingChofer === chofer.id ? (
-                        <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full p-2 border rounded" />
-                      ) : (
-                        chofer.telefono
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                      {editingChofer === chofer.id ? (
-                        <input type="text" name="unidad" value={formData.unidad} onChange={handleChange} className="w-full p-2 border rounded" />
-                      ) : (
-                        chofer.unidad
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                      {editingChofer === chofer.id ? (
-                        <>
-                          <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingChofer(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => handleEdit(chofer)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
-                          <button onClick={() => handleDelete(chofer.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
-                        </>
-                      )}
-                    </td>
+            <div>
+              <table className="min-w-full bg-white border border-gray-200 mb-6">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {choferes.map((chofer, index) => (
+                    <tr key={index} className="even:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                        {editingChofer === chofer.id ? (
+                          <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="w-full p-2 border rounded" />
+                        ) : (
+                          chofer.nombre
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                        {editingChofer === chofer.id ? (
+                          <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full p-2 border rounded" />
+                        ) : (
+                          chofer.telefono
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                        {editingChofer === chofer.id ? (
+                          <input type="text" name="email" value={formData.email} onChange={handleChange} className="w-full p-2 border rounded" />
+                        ) : (
+                          chofer.email
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                        {editingChofer === chofer.id ? (
+                          <>
+                            <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
+                            <button onClick={() => setEditingChofer(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleEdit(chofer)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
+                            <button onClick={() => handleDelete(chofer.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <ChoferesForm unidadesDisponibles={unidades} onRegister={addChofer} />
+            </div>
           ) : (
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Choferes</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Detalles</th>
                 </tr>
               </thead>
               <tbody>
                 {unidades.map((unidad, index) => (
                   <tr key={index} className="even:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.nombre}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.choferes.join(', ')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.detalles}</td>
                   </tr>
                 ))}
               </tbody>
