@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function ListaDeChoferes() {
   const navigate = useNavigate();
-  const [choferes, setChoferes] = useState(JSON.parse(localStorage.getItem('choferesData')) || []);
-  const [unidades, setUnidades] = useState(JSON.parse(localStorage.getItem('unidadesData')) || []);
+  const [choferes, setChoferes] = useState([]);
+  const [unidades, setUnidades] = useState([]);
   const [editingChofer, setEditingChofer] = useState(null);
   const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', unidad: '' });
   const [showTable, setShowTable] = useState('conductores'); // 'conductores' or 'unidades'
+
+  useEffect(() => {
+    const storedChoferes = JSON.parse(localStorage.getItem('choferesData')) || [];
+    const storedUnidades = JSON.parse(localStorage.getItem('unidadesData')) || [];
+    console.log('Loaded choferes:', storedChoferes); // Agrega esta línea
+    console.log('Loaded unidades:', storedUnidades); // Agrega esta línea
+    setChoferes(storedChoferes);
+    setUnidades(storedUnidades);
+  }, []);
 
   const handleDelete = (id) => {
     const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
@@ -68,7 +77,7 @@ function ListaDeChoferes() {
             onClick={() => navigate('/optionsadmin')}
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300"
           >
-            Regresar 
+            Regresar
           </button>
         </div>
         <div className="flex justify-center mb-6">
@@ -144,7 +153,7 @@ function ListaDeChoferes() {
               <thead>
                 <tr>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID de Conductores</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Choferes</th>
                 </tr>
               </thead>
               <tbody>
