@@ -9,12 +9,12 @@ function ListaDeChoferes() {
   const [unidades, setUnidades] = useState([]);
   const [editingChofer, setEditingChofer] = useState(null);
   const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', email: '' });
+>>>>>>>>> Temporary merge branch 2
   const [showTable, setShowTable] = useState('conductores'); // 'conductores' or 'unidades'
 
   useEffect(() => {
     fetchChoferes();
-    const storedUnidades = JSON.parse(localStorage.getItem('unidadesData')) || [];
-    setUnidades(storedUnidades);
+    fetchUnidades();
   }, []);
 
   const fetchChoferes = async () => {
@@ -29,6 +29,20 @@ function ListaDeChoferes() {
       setChoferes(choferesData);
     } catch (error) {
       console.error('Error fetching choferes:', error);
+    }
+  };
+
+  const fetchUnidades = async () => {
+    try {
+      const response = await axios.get('http://ivy.urbanrouteexplorer.xyz/api/urban');
+      const unidadesData = response.data.map(unidad => ({
+        id: unidad.urban_id,
+        numero: unidad.vehicle_number,
+        status: unidad.status
+      }));
+      setUnidades(unidadesData);
+    } catch (error) {
+      console.error('Error fetching unidades:', error);
     }
   };
 
@@ -88,13 +102,17 @@ function ListaDeChoferes() {
         <div className="flex justify-center mb-6">
           <button
             onClick={() => setShowTable('conductores')}
-            className={`bg-${showTable === 'conductores' ? 'blue' : 'gray'}-500 text-white p-2 rounded mr-4 hover:bg-${showTable === 'conductores' ? 'blue' : 'gray'}-700 transition duration-300`}
+            className={`${
+              showTable === 'conductores' ? 'bg-blue-500' : 'bg-gray-500'
+            } text-white p-2 rounded mr-4 hover:bg-blue-700 transition duration-300`}
           >
             Conductores
           </button>
           <button
             onClick={() => setShowTable('unidades')}
-            className={`bg-${showTable === 'unidades' ? 'blue' : 'gray'}-500 text-white p-2 rounded hover:bg-${showTable === 'unidades' ? 'blue' : 'gray'}-700 transition duration-300`}
+            className={`${
+              showTable === 'unidades' ? 'bg-blue-500' : 'bg-gray-500'
+            } text-white p-2 rounded hover:bg-blue-700 transition duration-300`}
           >
             Unidades
           </button>
@@ -110,29 +128,50 @@ function ListaDeChoferes() {
                     <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
                     <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
                     <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
+>>>>>>>>> Temporary merge branch 2
                   </tr>
                 </thead>
                 <tbody>
-                  {choferes.map((chofer, index) => (
-                    <tr key={index} className="even:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{chofer.id}</td>
+                  {choferes.map((chofer) => (
+                    <tr key={chofer.id} className="even:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                        {chofer.id}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                         {editingChofer === chofer.id ? (
-                          <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="w-full p-2 border rounded" />
+                          <input
+                            type="text"
+                            name="nombre"
+                            value={formData.nombre}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                          />
                         ) : (
                           chofer.nombre
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                         {editingChofer === chofer.id ? (
-                          <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full p-2 border rounded" />
+                          <input
+                            type="text"
+                            name="telefono"
+                            value={formData.telefono}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                          />
                         ) : (
                           chofer.telefono
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                         {editingChofer === chofer.id ? (
-                          <input type="text" name="email" value={formData.email} onChange={handleChange} className="w-full p-2 border rounded" />
+                          <input
+                            type="text"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                          />
                         ) : (
                           chofer.email
                         )}
@@ -140,13 +179,33 @@ function ListaDeChoferes() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                         {editingChofer === chofer.id ? (
                           <>
-                            <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                            <button onClick={() => setEditingChofer(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
+                            <button
+                              onClick={handleSave}
+                              className="bg-green-500 text-white p-2 rounded mr-2"
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              onClick={() => setEditingChofer(null)}
+                              className="bg-gray-500 text-white p-2 rounded"
+                            >
+                              Cancelar
+                            </button>
                           </>
                         ) : (
                           <>
-                            <button onClick={() => handleEdit(chofer)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
-                            <button onClick={() => handleDelete(chofer.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                            <button
+                              onClick={() => handleEdit(chofer)}
+                              className="bg-yellow-500 text-white p-2 rounded mr-2"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDelete(chofer.id)}
+                              className="bg-red-500 text-white p-2 rounded"
+                            >
+                              Eliminar
+                            </button>
                           </>
                         )}
                       </td>
@@ -154,20 +213,72 @@ function ListaDeChoferes() {
                   ))}
                 </tbody>
               </table>
+              <ChoferesForm unidadesDisponibles={unidades} onRegister={addChofer} />
             </div>
           ) : (
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr>
+<<<<<<<<< Temporary merge branch 1
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Número de Vehículo</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Estado</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Conductor</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
+=========
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Detalles</th>
+>>>>>>>>> Temporary merge branch 2
                 </tr>
               </thead>
               <tbody>
                 {unidades.map((unidad, index) => (
                   <tr key={index} className="even:bg-gray-50">
+<<<<<<<<< Temporary merge branch 1
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{urban.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUrban === urban.id ? (
+                        <input type="text" name="vehicle_number" value={formDataUrban.vehicle_number} onChange={handleChangeUrban} className="w-full p-2 border rounded" />
+                      ) : (
+                        urban.vehicle_number
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUrban === urban.id ? (
+                        <input type="text" name="status" value={formDataUrban.status} onChange={handleChangeUrban} className="w-full p-2 border rounded" />
+                      ) : (
+                        urban.status
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUrban === urban.id ? (
+                        <select name="selectedUser" value={formDataUrban.selectedUser} onChange={handleChangeUrban} className="w-full p-2 border rounded">
+                          <option value="">Seleccione un conductor</option>
+                          {users.filter(user => user.role === 4).map(user => (
+                            <option key={user.id} value={user.id}>{user.full_name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        users.find(user => user.id === urban.user_id)?.full_name || 'Sin asignar'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUrban === urban.id ? (
+                        <>
+                          <button onClick={handleSaveUrban} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
+                          <button onClick={() => setEditingUrban(null)} className="bg-red-500 text-white p-2 rounded">Cancelar</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEditUrban(urban)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
+                          <button onClick={() => handleDeleteUrban(urban.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                        </>
+                      )}
+                    </td>
+=========
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.nombre}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.detalles}</td>
+>>>>>>>>> Temporary merge branch 2
                   </tr>
                 ))}
               </tbody>
