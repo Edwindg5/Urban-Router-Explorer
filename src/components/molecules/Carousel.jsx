@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import image9 from '../../assets/image9.jpeg'
 import image11 from '../../assets/image11.jpeg';
-import image14 from '../../assets/image14.jpeg';
+import imagen3 from '../../assets/imagen3.jpeg';
 
 function Carousel() {
-  const images = [image9, image11, image14];
+  const images = [image9, image11, imagen3];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
