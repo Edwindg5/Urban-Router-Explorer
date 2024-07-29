@@ -24,10 +24,18 @@ import ListaDeChoferesPage from './pages/ListaDeChoferesPage';
 import VerListas from './pages/VerListas';
 import ReporteDescriptivo from './pages/ReporteDescriptivo';
 
+const PrivateRoute = ({ element, requiredRole }) => {
+  const { isAuthenticated, role } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
 
-const PrivateRoute = ({ element }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? element : <Navigate to="/login" />;
+  if (requiredRole && role !== requiredRole) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  return element;
 };
 
 function App() {
@@ -45,20 +53,21 @@ function App() {
             <Route path="/estacion" element={<Estacion />} />
             <Route path="/contacto" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/options" element={<PrivateRoute element={<ConductorOptions />} />} />
-            <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} />} />
-            <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} />} />
-            <Route path="/horario" element={<PrivateRoute element={<Horario />} />} />
-            <Route path="/admin/Urbans" element={<PrivateRoute element={<Urbans />} />} />
-            <Route path="/reporte" element={<PrivateRoute element={<Reporte />} />} />
-            <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} />} />
-            <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} />} />
-            <Route path="/reporte-problemas" element={<PrivateRoute element={<ReporteProblemas />} />} />
-            <Route path="/unidades" element={<PrivateRoute element={<ListaDeUnidadesPage />} />} />
-            <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} />} />
-            <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} />} />
-            <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} />} />
-            <Route path='/ver_listas'  element={<PrivateRoute element={<VerListas />} />} />
+            <Route path="/options" element={<PrivateRoute element={<ConductorOptions />} requiredRole={4} />} />
+            <Route path='/optionschecador' element={<PrivateRoute element={<ChecadorOptions />} requiredRole={3} />} />
+            <Route path='/optionsadmin' element={<PrivateRoute element={<Administrador />} requiredRole={1} />} />
+            <Route path="/horario" element={<PrivateRoute element={<Horario />} requiredRole={1} />} />
+            <Route path="/admin/Urbans" element={<PrivateRoute element={<Urbans />} requiredRole={1} />} />
+            <Route path="/reporte" element={<PrivateRoute element={<Reporte />} requiredRole={1} />} />
+            <Route path="/tarifa" element={<PrivateRoute element={<Tarifa />} requiredRole={1} />} />
+            <Route path="/ganancias" element={<PrivateRoute element={<Ganancias />} requiredRole={4} />} />
+            <Route path="/reporte-problemas" element={<PrivateRoute element={<ReporteProblemas />} requiredRole={4} />} />
+            <Route path="/unidades" element={<PrivateRoute element={<ListaDeUnidadesPage />} requiredRole={1} />} />
+            <Route path="/cumplimiento-horario" element={<PrivateRoute element={<CumplimientoDeHorario />} requiredRole={3} />} />
+            <Route path="/admin/choferes" element={<PrivateRoute element={<ChoferesPage />} requiredRole={1} />} />
+            <Route path="/admin/listas" element={<PrivateRoute element={<ListaDeChoferesPage />} requiredRole={1} />} />
+            <Route path='/ver_listas'  element={<PrivateRoute element={<VerListas />} requiredRole={1} />} />
+            <Route path='/reporte-descriptivo' element={<PrivateRoute element={<ReporteDescriptivo />} requiredRole={4} />} />
           </Routes>
           {location.pathname === '/' && <Footer />}
         </div>

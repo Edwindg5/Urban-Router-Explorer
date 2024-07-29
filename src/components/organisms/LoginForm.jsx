@@ -1,34 +1,37 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../atoms/AuthContext';
 import LinkButtonChecador from '../atoms/LinkButtonChecador';
 import ButtonChecador from '../atoms/ButtonChecador';
-import Swal from 'sweetalert2';
-
 
 function LoginForm() {
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
 
-
-
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (email === 'conductor@gmail.com' && password === '123') {
-      login();
-      navigate('/options');  
-    } else if (email === 'checador@gmail.com' && password === '456') {
-      login();
-      navigate('/optionschecador'); 
-    }else if (email ==='admin@gmail.com' && password === '789'){
-      login();
-      navigate('/optionsadmin')
+    const { success, user } = await login(email, fullName, password);
+    if (success) {
+      switch (user.role_id) {
+        case 1:
+          navigate('/optionsadmin');
+          break;
+        case 3:
+          navigate('/optionschecador');
+          break;
+        case 4:
+          navigate('/options');
+          break;
+        default:
+          alert('Rol desconocido');
+          navigate('/');
+      }
     } else {
-      Swal.fire('Credenciales incorrectas');
+      alert('Credenciales incorrectas');
     }
   };
 
@@ -45,6 +48,19 @@ function LoginForm() {
           className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+          Nombre Completo
+        </label>
+        <input
+          type="text"
+          id="fullName"
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
           required
         />
       </div>
