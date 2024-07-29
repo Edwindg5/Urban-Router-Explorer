@@ -9,8 +9,8 @@ function ListaDeChoferes() {
   const [urbans, setUrbans] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [editingUrban, setEditingUrban] = useState(null);
-  const [formDataUser, setFormDataUser] = useState({ id: '', name: '', phone: '', email: '' });
-  const [formDataUrban, setFormDataUrban] = useState({ id: '', vehicle_number: '', selectedUser: '' });
+  const [formDataUser, setFormDataUser] = useState({ id: '', full_name: '', phone: '', email: '' });
+  const [formDataUrban, setFormDataUrban] = useState({ id: '', vehicle_number: '', status: '', selectedUser: '' });
   const [showTable, setShowTable] = useState('conductores'); // 'conductores' or 'unidades'
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function ListaDeChoferes() {
 
   const handleEditUser = (user) => {
     setEditingUser(user.id);
-    setFormDataUser({ id: user.id, name: user.name, phone: user.phone, email: user.email });
+    setFormDataUser({ id: user.id, full_name: user.full_name, phone: user.phone, email: user.email });
   };
 
   const handleChangeUser = (e) => {
@@ -72,7 +72,7 @@ function ListaDeChoferes() {
 
   const handleEditUrban = (urban) => {
     setEditingUrban(urban.id);
-    setFormDataUrban({ id: urban.id, vehicle_number: urban.vehicle_number, selectedUser: urban.user_id });
+    setFormDataUrban({ id: urban.id, vehicle_number: urban.vehicle_number, status: urban.status, selectedUser: urban.user_id });
   };
 
   const handleChangeUrban = (e) => {
@@ -89,6 +89,18 @@ function ListaDeChoferes() {
     } catch (error) {
       console.error('Error saving urban:', error);
     }
+  };
+
+  const handleAssignUserToUrban = (urbanId, userId) => {
+    const updatedUrbans = urbans.map(urban => {
+      if (urban.id === urbanId) {
+        return { ...urban, user_id: userId };
+      }
+      return urban;
+    });
+    setUrbans(updatedUrbans);
+    localStorage.setItem('urbans', JSON.stringify(updatedUrbans));
+    Swal.fire('Asignado', 'El conductor ha sido asignado a la unidad', 'success');
   };
 
   return (
@@ -130,14 +142,14 @@ function ListaDeChoferes() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user, index) => (
+                {users.filter(user => user.role === 4).map((user, index) => (
                   <tr key={index} className="even:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{user.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUser === user.id ? (
-                        <input type="text" name="name" value={formDataUser.name} onChange={handleChangeUser} className="w-full p-2 border rounded" />
+                        <input type="text" name="full_name" value={formDataUser.full_name} onChange={handleChangeUser} className="w-full p-2 border rounded" />
                       ) : (
-                        user.name
+                        user.full_name
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
@@ -158,7 +170,7 @@ function ListaDeChoferes() {
                       {editingUser === user.id ? (
                         <>
                           <button onClick={handleSaveUser} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingUser(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
+                          <button onClick={() => setEditingUser(null)} className="bg-red-500 text-white p-2 rounded">Cancelar</button>
                         </>
                       ) : (
                         <>
@@ -177,6 +189,7 @@ function ListaDeChoferes() {
                 <tr>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Número de Vehículo</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Conductor</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -194,21 +207,28 @@ function ListaDeChoferes() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
+                        <input type="text" name="status" value={formDataUrban.status} onChange={handleChangeUrban} className="w-full p-2 border rounded" />
+                      ) : (
+                        urban.status
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUrban === urban.id ? (
                         <select name="selectedUser" value={formDataUrban.selectedUser} onChange={handleChangeUrban} className="w-full p-2 border rounded">
                           <option value="">Seleccione un conductor</option>
-                          {users.map(user => (
-                            <option key={user.id} value={user.id}>{user.name}</option>
+                          {users.filter(user => user.role === 4).map(user => (
+                            <option key={user.id} value={user.id}>{user.full_name}</option>
                           ))}
                         </select>
                       ) : (
-                        users.find(user => user.id === urban.user_id)?.name || 'No asignado'
+                        users.find(user => user.id === urban.user_id)?.full_name || 'Sin asignar'
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
                         <>
                           <button onClick={handleSaveUrban} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingUrban(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
+                          <button onClick={() => setEditingUrban(null)} className="bg-red-500 text-white p-2 rounded">Cancelar</button>
                         </>
                       ) : (
                         <>
