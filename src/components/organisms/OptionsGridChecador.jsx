@@ -1,5 +1,5 @@
 import React from 'react';
-import OptionCardChecador from '../molecules/OptionCardChecador';
+import OptionCardChecador from '../molecules/OptionCardChecador'; //referencia
 
 function OptionsGridChecador() {
   const options = [
