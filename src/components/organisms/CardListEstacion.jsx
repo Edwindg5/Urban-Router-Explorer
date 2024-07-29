@@ -4,6 +4,7 @@ import terminalImage from '../../assets/terminal.jpeg';
 import conductor1Image from '../../assets/conductor1.jpeg';
 import conductor2Image from '../../assets/conductor2.jpeg';
 import imagen6 from '../../assets/imagen6.jpeg'
+import image12 from '../../assets/image12.jpeg'
 
 function CardListEstacion() {
   const cards = [
@@ -38,7 +39,7 @@ function CardListEstacion() {
       description: 'La terminal antigua aún opera y ofrece servicios continuos para los pasajeros, manteniendo la calidad y seguridad.'
     },
     {
-      imageSrc: terminalImage,
+      imageSrc: image12,
       imageAlt: 'Terminal Renovada',
       title: 'Terminal Renovada',
       description: 'La terminal ha sido renovada con nuevas instalaciones y mayor espacio para el confort de los pasajeros.'
