@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import ChoferesForm from '../molecules/ChoferesForm';
+
 function ListaDeChoferes() {
   const navigate = useNavigate();
   const [choferes, setChoferes] = useState([]);
@@ -71,10 +71,6 @@ function ListaDeChoferes() {
       console.error('Error saving chofer:', error);
       Swal.fire('Error', 'Hubo un problema al guardar los cambios.', 'error');
     }
-  };
-
-  const addChofer = (newChofer) => {
-    setChoferes([...choferes, newChofer]);
   };
 
   return (
@@ -158,7 +154,6 @@ function ListaDeChoferes() {
                   ))}
                 </tbody>
               </table>
-              <ChoferesForm unidadesDisponibles={unidades} onRegister={addChofer} />
             </div>
           ) : (
             <table className="min-w-full bg-white border border-gray-200">
