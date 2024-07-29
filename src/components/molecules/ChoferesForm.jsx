@@ -66,6 +66,13 @@ function ChoferesForm({ unidadesDisponibles, onRegister }) {
         confirmButtonText: 'OK'
       });
 
+      const newChofer = {
+        id: response.data.id,
+        nombre,
+        telefono,
+        unidad: '' // Asigna unidad si tienes esta información disponible
+      };
+
       setFormData({
         nombre: '',
         email: '',
@@ -73,7 +80,7 @@ function ChoferesForm({ unidadesDisponibles, onRegister }) {
         password: ''
       });
 
-      onRegister(response.data); // Llama a la función de registro
+      onRegister(newChofer); // Llama a la función de registro
     } catch (error) {
       console.error('Error registrando chofer:', error);
       Swal.fire({
