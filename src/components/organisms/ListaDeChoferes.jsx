@@ -2,19 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
+import ChoferesForm from '../molecules/ChoferesForm';
 function ListaDeChoferes() {
   const navigate = useNavigate();
-  const [choferes, setChoferes] = useState([]);
-  const [unidades, setUnidades] = useState([]);
-  const [editingChofer, setEditingChofer] = useState(null);
-  const [formData, setFormData] = useState({ id: '', nombre: '', telefono: '', email: '' });
->>>>>>>>> Temporary merge branch 2
+  const [users, setUsers] = useState([]);
+  const [urbans, setUrbans] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editingUrban, setEditingUrban] = useState(null);
+  const [formDataUser, setFormDataUser] = useState({ id: '', name: '', phone: '', email: '' });
+  const [formDataUrban, setFormDataUrban] = useState({ id: '', vehicle_number: '', selectedUser: '' });
   const [showTable, setShowTable] = useState('conductores'); // 'conductores' or 'unidades'
 
   useEffect(() => {
     fetchChoferes();
-    fetchUnidades();
+    const storedUnidades = JSON.parse(localStorage.getItem('unidadesData')) || [];
+    setUnidades(storedUnidades);
   }, []);
 
   const fetchChoferes = async () => {
@@ -32,21 +34,17 @@ function ListaDeChoferes() {
     }
   };
 
-  const fetchUnidades = async () => {
-    try {
-      const response = await axios.get('http://ivy.urbanrouteexplorer.xyz/api/urban');
-      const unidadesData = response.data.map(unidad => ({
-        id: unidad.urban_id,
-        numero: unidad.vehicle_number,
-        status: unidad.status
-      }));
-      setUnidades(unidadesData);
-    } catch (error) {
-      console.error('Error fetching unidades:', error);
-    }
+  const handleEditUser = (user) => {
+    setEditingUser(user.id);
+    setFormDataUser({ id: user.id, name: user.name, phone: user.phone, email: user.email });
   };
 
-  const handleDelete = async (id) => {
+  const handleChangeUser = (e) => {
+    const { name, value } = e.target;
+    setFormDataUser({ ...formDataUser, [name]: value });
+  };
+
+  const handleSaveUser = async () => {
     try {
       await axios.delete(`http://ivy.urbanrouteexplorer.xyz/api/user/${id}`);
       const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
@@ -58,9 +56,9 @@ function ListaDeChoferes() {
     }
   };
 
-  const handleEdit = (chofer) => {
-    setEditingChofer(chofer.id);
-    setFormData({ id: chofer.id, nombre: chofer.nombre, telefono: chofer.telefono, email: chofer.email });
+  const handleEditUrban = (urban) => {
+    setEditingUrban(urban.id);
+    setFormDataUrban({ id: urban.id, vehicle_number: urban.vehicle_number, selectedUser: urban.user_id });
   };
 
   const handleChange = (e) => {
@@ -102,139 +100,84 @@ function ListaDeChoferes() {
         <div className="flex justify-center mb-6">
           <button
             onClick={() => setShowTable('conductores')}
-            className={`${
-              showTable === 'conductores' ? 'bg-blue-500' : 'bg-gray-500'
-            } text-white p-2 rounded mr-4 hover:bg-blue-700 transition duration-300`}
+            className={`bg-${showTable === 'conductores' ? 'blue' : 'gray'}-500 text-white p-2 rounded mr-4 hover:bg-${showTable === 'conductores' ? 'blue' : 'gray'}-700 transition duration-300`}
           >
             Conductores
           </button>
           <button
             onClick={() => setShowTable('unidades')}
-            className={`${
-              showTable === 'unidades' ? 'bg-blue-500' : 'bg-gray-500'
-            } text-white p-2 rounded hover:bg-blue-700 transition duration-300`}
+            className={`bg-${showTable === 'unidades' ? 'blue' : 'gray'}-500 text-white p-2 rounded hover:bg-${showTable === 'unidades' ? 'blue' : 'gray'}-700 transition duration-300`}
           >
             Unidades
           </button>
         </div>
         <div className="overflow-x-auto">
           {showTable === 'conductores' ? (
-            <div>
-              <table className="min-w-full bg-white border border-gray-200 mb-6">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
->>>>>>>>> Temporary merge branch 2
+            <table className="min-w-full bg-white border border-gray-200 mb-6">
+              <thead>
+                <tr>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Teléfono</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user, index) => (
+                  <tr key={index} className="even:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{user.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUser === user.id ? (
+                        <input type="text" name="name" value={formDataUser.name} onChange={handleChangeUser} className="w-full p-2 border rounded" />
+                      ) : (
+                        user.name
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUser === user.id ? (
+                        <input type="text" name="phone" value={formDataUser.phone} onChange={handleChangeUser} className="w-full p-2 border rounded" />
+                      ) : (
+                        user.phone
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUser === user.id ? (
+                        <input type="text" name="email" value={formDataUser.email} onChange={handleChangeUser} className="w-full p-2 border rounded" />
+                      ) : (
+                        user.email
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
+                      {editingUser === user.id ? (
+                        <>
+                          <button onClick={handleSaveUser} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
+                          <button onClick={() => setEditingUser(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEditUser(user)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
+                          <button onClick={() => handleDeleteUser(user.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                        </>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {choferes.map((chofer) => (
-                    <tr key={chofer.id} className="even:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                        {chofer.id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                        {editingChofer === chofer.id ? (
-                          <input
-                            type="text"
-                            name="nombre"
-                            value={formData.nombre}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                          />
-                        ) : (
-                          chofer.nombre
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                        {editingChofer === chofer.id ? (
-                          <input
-                            type="text"
-                            name="telefono"
-                            value={formData.telefono}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                          />
-                        ) : (
-                          chofer.telefono
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                        {editingChofer === chofer.id ? (
-                          <input
-                            type="text"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                          />
-                        ) : (
-                          chofer.email
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                        {editingChofer === chofer.id ? (
-                          <>
-                            <button
-                              onClick={handleSave}
-                              className="bg-green-500 text-white p-2 rounded mr-2"
-                            >
-                              Guardar
-                            </button>
-                            <button
-                              onClick={() => setEditingChofer(null)}
-                              className="bg-gray-500 text-white p-2 rounded"
-                            >
-                              Cancelar
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => handleEdit(chofer)}
-                              className="bg-yellow-500 text-white p-2 rounded mr-2"
-                            >
-                              Editar
-                            </button>
-                            <button
-                              onClick={() => handleDelete(chofer.id)}
-                              className="bg-red-500 text-white p-2 rounded"
-                            >
-                              Eliminar
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <ChoferesForm unidadesDisponibles={unidades} onRegister={addChofer} />
-            </div>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr>
-<<<<<<<<< Temporary merge branch 1
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Número de Vehículo</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Conductor</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
-=========
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Unidad</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Detalles</th>
->>>>>>>>> Temporary merge branch 2
                 </tr>
               </thead>
               <tbody>
                 {unidades.map((unidad, index) => (
                   <tr key={index} className="even:bg-gray-50">
-<<<<<<<<< Temporary merge branch 1
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{urban.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
@@ -245,28 +188,21 @@ function ListaDeChoferes() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
-                        <input type="text" name="status" value={formDataUrban.status} onChange={handleChangeUrban} className="w-full p-2 border rounded" />
-                      ) : (
-                        urban.status
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
-                      {editingUrban === urban.id ? (
                         <select name="selectedUser" value={formDataUrban.selectedUser} onChange={handleChangeUrban} className="w-full p-2 border rounded">
                           <option value="">Seleccione un conductor</option>
-                          {users.filter(user => user.role === 4).map(user => (
-                            <option key={user.id} value={user.id}>{user.full_name}</option>
+                          {users.map(user => (
+                            <option key={user.id} value={user.id}>{user.name}</option>
                           ))}
                         </select>
                       ) : (
-                        users.find(user => user.id === urban.user_id)?.full_name || 'Sin asignar'
+                        users.find(user => user.id === urban.user_id)?.name || 'No asignado'
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
                         <>
                           <button onClick={handleSaveUrban} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingUrban(null)} className="bg-red-500 text-white p-2 rounded">Cancelar</button>
+                          <button onClick={() => setEditingUrban(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
                         </>
                       ) : (
                         <>
@@ -275,10 +211,6 @@ function ListaDeChoferes() {
                         </>
                       )}
                     </td>
-=========
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.nombre}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{unidad.detalles}</td>
->>>>>>>>> Temporary merge branch 2
                   </tr>
                 ))}
               </tbody>
