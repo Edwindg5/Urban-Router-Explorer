@@ -68,7 +68,7 @@ function ListaDeChoferes() {
             onClick={() => navigate('/optionsadmin')}
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300"
           >
-            Regresar a Opciones
+            Regresar 
           </button>
         </div>
         <div className="flex justify-center mb-6">
