@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-function ListaDeChoferes() { 
+function ListaDeChoferes() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [urbans, setUrbans] = useState([]);
@@ -15,8 +15,8 @@ function ListaDeChoferes() {
 
   useEffect(() => {
     fetchChoferes();
-    const storedUnidades = JSON.parse(localStorage.getItem('unidadesData')) || [];
-    setUnidades(storedUnidades);
+    const storedUrbans = JSON.parse(localStorage.getItem('unidadesData')) || [];
+    setUrbans(storedUrbans);
   }, []);
 
   const fetchChoferes = async () => {
@@ -24,11 +24,11 @@ function ListaDeChoferes() {
       const response = await axios.get('http://ivy.urbanrouteexplorer.xyz/api/user');
       const choferesData = response.data.map(chofer => ({
         id: chofer.user_id,
-        nombre: chofer.full_name,
-        telefono: chofer.phone,
+        name: chofer.full_name,
+        phone: chofer.phone,
         email: chofer.email
       }));
-      setChoferes(choferesData);
+      setUsers(choferesData);
     } catch (error) {
       console.error('Error fetching choferes:', error);
     }
@@ -46,12 +46,31 @@ function ListaDeChoferes() {
 
   const handleSaveUser = async () => {
     try {
+      await axios.put(`http://ivy.urbanrouteexplorer.xyz/api/user/${formDataUser.id}`, {
+        full_name: formDataUser.name,
+        phone: formDataUser.phone,
+        email: formDataUser.email
+      });
+      const updatedUsers = users.map(user =>
+        user.id === editingUser ? { ...user, ...formDataUser } : user
+      );
+      setUsers(updatedUsers);
+      setEditingUser(null);
+      Swal.fire('Guardado', 'Los cambios han sido guardados', 'success');
+    } catch (error) {
+      console.error('Error saving user:', error);
+      Swal.fire('Error', 'Hubo un problema al guardar los cambios.', 'error');
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    try {
       await axios.delete(`http://ivy.urbanrouteexplorer.xyz/api/user/${id}`);
-      const updatedChoferes = choferes.filter(chofer => chofer.id !== id);
-      setChoferes(updatedChoferes);
+      const updatedUsers = users.filter(user => user.id !== id);
+      setUsers(updatedUsers);
       Swal.fire('Eliminado', 'El chofer ha sido eliminado', 'success');
     } catch (error) {
-      console.error('Error deleting chofer:', error);
+      console.error('Error deleting user:', error);
       Swal.fire('Error', 'Hubo un problema al eliminar el chofer.', 'error');
     }
   };
@@ -61,27 +80,38 @@ function ListaDeChoferes() {
     setFormDataUrban({ id: urban.id, vehicle_number: urban.vehicle_number, selectedUser: urban.user_id });
   };
 
-  const handleChange = (e) => {
+  const handleChangeUrban = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormDataUrban({ ...formDataUrban, [name]: value });
   };
 
-  const handleSave = async () => {
+  const handleSaveUrban = async () => {
     try {
-      await axios.put(`http://ivy.urbanrouteexplorer.xyz/api/user/${formData.id}`, {
-        full_name: formData.nombre,
-        phone: formData.telefono,
-        email: formData.email
+      await axios.put(`http://ivy.urbanrouteexplorer.xyz/api/urban/${formDataUrban.id}`, {
+        vehicle_number: formDataUrban.vehicle_number,
+        user_id: formDataUrban.selectedUser
       });
-      const updatedChoferes = choferes.map(chofer =>
-        chofer.id === editingChofer ? { ...chofer, ...formData } : chofer
+      const updatedUrbans = urbans.map(urban =>
+        urban.id === editingUrban ? { ...urban, ...formDataUrban } : urban
       );
-      setChoferes(updatedChoferes);
-      setEditingChofer(null);
+      setUrbans(updatedUrbans);
+      setEditingUrban(null);
       Swal.fire('Guardado', 'Los cambios han sido guardados', 'success');
     } catch (error) {
-      console.error('Error saving chofer:', error);
+      console.error('Error saving urban:', error);
       Swal.fire('Error', 'Hubo un problema al guardar los cambios.', 'error');
+    }
+  };
+
+  const handleDeleteUrban = async (id) => {
+    try {
+      await axios.delete(`http://ivy.urbanrouteexplorer.xyz/api/urban/${id}`);
+      const updatedUrbans = urbans.filter(urban => urban.id !== id);
+      setUrbans(updatedUrbans);
+      Swal.fire('Eliminado', 'La unidad ha sido eliminada', 'success');
+    } catch (error) {
+      console.error('Error deleting urban:', error);
+      Swal.fire('Error', 'Hubo un problema al eliminar la unidad.', 'error');
     }
   };
 
@@ -150,14 +180,11 @@ function ListaDeChoferes() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUser === user.id ? (
-                        <>
-                          <button onClick={handleSaveUser} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingUser(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
-                        </>
+                        <button onClick={handleSaveUser} className="bg-green-500 text-white p-2 rounded hover:bg-green-700 transition duration-300">Guardar</button>
                       ) : (
                         <>
-                          <button onClick={() => handleEditUser(user)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
-                          <button onClick={() => handleDeleteUser(user.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                          <button onClick={() => handleEditUser(user)} className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-700 transition duration-300 mr-2">Editar</button>
+                          <button onClick={() => handleDeleteUser(user.id)} className="bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300">Eliminar</button>
                         </>
                       )}
                     </td>
@@ -166,17 +193,17 @@ function ListaDeChoferes() {
               </tbody>
             </table>
           ) : (
-            <table className="min-w-full bg-white border border-gray-200">
+            <table className="min-w-full bg-white border border-gray-200 mb-6">
               <thead>
                 <tr>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Número de Vehículo</th>
-                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Conductor</th>
+                  <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Chofer Asignado</th>
                   <th className="px-6 py-3 border-b border-gray-200 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {unidades.map((unidad, index) => (
+                {urbans.map((urban, index) => (
                   <tr key={index} className="even:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">{urban.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
@@ -189,7 +216,7 @@ function ListaDeChoferes() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
                         <select name="selectedUser" value={formDataUrban.selectedUser} onChange={handleChangeUrban} className="w-full p-2 border rounded">
-                          <option value="">Seleccione un conductor</option>
+                          <option value="">Seleccionar chofer</option>
                           {users.map(user => (
                             <option key={user.id} value={user.id}>{user.name}</option>
                           ))}
@@ -200,14 +227,11 @@ function ListaDeChoferes() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-b border-gray-200">
                       {editingUrban === urban.id ? (
-                        <>
-                          <button onClick={handleSaveUrban} className="bg-green-500 text-white p-2 rounded mr-2">Guardar</button>
-                          <button onClick={() => setEditingUrban(null)} className="bg-gray-500 text-white p-2 rounded">Cancelar</button>
-                        </>
+                        <button onClick={handleSaveUrban} className="bg-green-500 text-white p-2 rounded hover:bg-green-700 transition duration-300">Guardar</button>
                       ) : (
                         <>
-                          <button onClick={() => handleEditUrban(urban)} className="bg-yellow-500 text-white p-2 rounded mr-2">Editar</button>
-                          <button onClick={() => handleDeleteUrban(urban.id)} className="bg-red-500 text-white p-2 rounded">Eliminar</button>
+                          <button onClick={() => handleEditUrban(urban)} className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-700 transition duration-300 mr-2">Editar</button>
+                          <button onClick={() => handleDeleteUrban(urban.id)} className="bg-red-500 text-white p-2 rounded hover:bg-red-700 transition duration-300">Eliminar</button>
                         </>
                       )}
                     </td>
